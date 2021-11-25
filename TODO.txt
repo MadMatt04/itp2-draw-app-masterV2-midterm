@@ -1,0 +1,7 @@
+- Consider removing old p5.min.js and p5.dom.js files.
+
+
+Completed Tasks
+===============
+
++ Handle tool options clearing.

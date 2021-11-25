@@ -1,0 +1,8 @@
+.ctrl-label {
+    font-family: "Arial Narrow", Arial, sans-serif;
+    font-size: 100%;
+}
+
+.slider-ctrl span {
+    margin-right: 4px;
+}
