@@ -13,6 +13,9 @@ function FreehandTool() {
     // A reference to FreehandOptions, will be initialized to instance in populateOptions().
     var options = null;
 
+    // A reference to the ColourPalette. Set from the setColourPalette function.
+    var colourPalette = null;
+
     this.draw = function () {
         //if the mouse is pressed
         if (mouseIsPressed) {
@@ -42,6 +45,8 @@ function FreehandTool() {
     this.unselectTool = function() {
         options = null;
         select(".options").html("");
+        strokeWeight(1);
+        colourPalette.alpha(255);
     };
 
     this.populateOptions = function() {
@@ -52,5 +57,16 @@ function FreehandTool() {
             console.log("Line thickness changed to", lineThickness, "px.");
             strokeWeight(lineThickness);
         })
+
+        options.onOpacityChanged(function(alpha) {
+            var mappedAlpha = Math.round(map(alpha, 0.0, 1.0, 0, 255));
+            console.log(`Alpha ${alpha} mapped to range 0-255: ${mappedAlpha}.`);
+            colourPalette.alpha(mappedAlpha);
+        })
+    };
+
+    this.setColourPalette = function (palette) {
+        console.log("Freehand tool received colour palette ", palette, ".");
+        colourPalette = palette;
     }
 }

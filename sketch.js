@@ -26,6 +26,12 @@ function setup() {
 	toolbox.addTool(new mirrorDrawTool());
 	background(255);
 
+	toolbox.tools.forEach(tool => {
+		if (tool.hasOwnProperty("setColourPalette")) {
+			tool.setColourPalette(colourP);
+		}
+	});
+
 }
 
 function draw() {

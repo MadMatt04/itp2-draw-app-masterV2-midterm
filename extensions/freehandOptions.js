@@ -1,8 +1,7 @@
 function FreehandOptions() {
-    // Line thickness setting in pixels, default of 1.
-    this.lineThickness = 1;
 
     var lineThicknessCallbacks = [];
+    var opacityCallbacks = [];
 
     var self = this;
 
@@ -11,19 +10,28 @@ function FreehandOptions() {
 
         var lineThicknessSlider = new LabeledSlider(parent, "Line thickness", "line-thickness-slider-ctrl",
             1, 100, 1, 1, "px", function (value) {
-                self.lineThickness = value;
-                lineThicknessCallbacks.forEach(callback => callback(self.lineThickness));
+                lineThicknessCallbacks.forEach(callback => callback(value));
+            });
+
+        var opacitySlider = new LabeledSlider(parent, "Opacity", "opacity-slider-ctrl", 0, 100, 100,
+            1, "%", function (value) {
+                // Transform from percentage to a 0.0 to 1.0 range.
+                var alphaValue = value / 100.0;
+                opacityCallbacks.forEach(callback => callback(alphaValue));
             });
     }
-
 
     this.onLineThicknessChanged = function (callback) {
         lineThicknessCallbacks.push(callback);
     }
+
+    this.onOpacityChanged = function (callback) {
+        opacityCallbacks.push(callback);
+    }
 }
 
 function LabeledSlider(parent, label, sliderId, min, max, value, step, valueSuffix, valueChangedListener) {
-    var container = createDiv(`<span class="ctrl-label">${label}:</label></span><span class="slider"></span>` +
+    var container = createDiv(`<span class="ctrl-label ctrl-title">${label}:</label></span><span class="slider"></span>` +
         `<span class="ctrl-label value-label">${value}&nbsp;${valueSuffix}</span>`);
     container.class("slider-ctrl");
     container.id(sliderId);
@@ -43,4 +51,8 @@ function LabeledSlider(parent, label, sliderId, min, max, value, step, valueSuff
             }
         }
     });
+
+    this.value = function() {
+        return slider.value();
+    }
 }

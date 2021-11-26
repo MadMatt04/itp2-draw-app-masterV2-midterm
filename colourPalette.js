@@ -8,7 +8,19 @@ function ColourPalette() {
 	//make the start colour be black
 	this.selectedColour = "black";
 
+	// The alpha value to control opacity. Set to 1.0 (full opacity) at the start.
+	var alpha = 255;
+
 	var self = this;
+
+	this.alpha = function(alphaValue) {
+		if (alphaValue === undefined) {
+			return alpha;
+		}
+
+		alpha = alphaValue;
+		setFillAndStroke();
+	}
 
 	var colourClick = function() {
 		//remove the old border
@@ -20,11 +32,17 @@ function ColourPalette() {
 
 		//set the selected colour and fill and stroke
 		self.selectedColour = c;
-		fill(c);
-		stroke(c);
+		setFillAndStroke();
 
 		//add a new border to the selected colour
 		this.style("border", "2px solid blue");
+	}
+
+	var setFillAndStroke = function() {
+		var colorObject = color(self.selectedColour);
+		colorObject.setAlpha(alpha);
+		fill(colorObject);
+		stroke(colorObject);
 	}
 
 	//load in the colours
