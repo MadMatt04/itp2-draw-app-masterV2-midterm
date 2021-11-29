@@ -2,6 +2,9 @@ function FreehandOptions() {
 
     var lineThicknessCallbacks = [];
     var opacityCallbacks = [];
+    var lineTypeCallbacks = [];
+
+    this.lineType = "Solid";
 
     var self = this;
 
@@ -19,6 +22,13 @@ function FreehandOptions() {
                 var alphaValue = value / 100.0;
                 opacityCallbacks.forEach(callback => callback(alphaValue));
             });
+
+        var lineType = new LabeledSelect(parent, "Line type", "line-type-select-ctrl",
+            ["------- Solid", "- - - - Dashed", "........ Dotted"], ["Solid", "Dashed", "Dotted"],
+            function(lineType) {
+                self.lineType = lineType;
+                console.log("Line type changed to", lineType);
+            });
     }
 
     this.onLineThicknessChanged = function (callback) {
@@ -27,6 +37,10 @@ function FreehandOptions() {
 
     this.onOpacityChanged = function (callback) {
         opacityCallbacks.push(callback);
+    }
+
+    this.onLineTypeChanged = function(callback) {
+        lineTypeCallbacks.push(callback);
     }
 }
 
@@ -37,14 +51,14 @@ function LabeledSlider(parent, label, sliderId, min, max, value, step, valueSuff
     container.id(sliderId);
     container.parent(parent);
 
-    var slider = createSlider(min, max, value, step);
-    slider.parent(select(`#${sliderId} .slider`));
+    var sliderCtrl = createSlider(min, max, value, step);
+    sliderCtrl.parent(select(`#${sliderId} .slider`));
 
     var valueLabel = select(`#${sliderId} .value-label`);
 
-    slider.mouseMoved(function () {
+    sliderCtrl.mouseMoved(function () {
         if (mouseIsPressed) {
-            var currentValue = slider.value();
+            var currentValue = sliderCtrl.value();
             valueLabel.html(`${currentValue}&nbsp;${valueSuffix}`);
             if (valueChangedListener) {
                 valueChangedListener(currentValue);
@@ -53,6 +67,32 @@ function LabeledSlider(parent, label, sliderId, min, max, value, step, valueSuff
     });
 
     this.value = function() {
-        return slider.value();
+        return sliderCtrl.value();
+    }
+}
+
+function LabeledSelect(parent, label, selectId, optionNames, optionValues, valueSelectedListener) {
+    var container = createDiv(`<span class="ctrl-label ctrl-title">${label}:</label></span>` +
+        `<span class="select"></span>`);
+    container.class("slider-ctrl");
+    container.id(selectId);
+    container.parent(parent);
+
+    var selectCtrl = createSelect();
+    if (!optionValues)
+    {
+        optionNames.forEach(opt => selectCtrl.option(opt));
+    } else {
+        for (var i = 0; i < optionNames.length; i++)
+        {
+            selectCtrl.option(optionNames[i], optionValues[i]);
+        }
+    }
+    selectCtrl.parent(select(`#${selectId} .select`));
+
+    if (valueSelectedListener) {
+        selectCtrl.changed(function() {
+            valueSelectedListener(selectCtrl.value());
+        });
     }
 }
