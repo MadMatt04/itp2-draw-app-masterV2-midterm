@@ -4,6 +4,7 @@ function FreehandOptions() {
     var opacityCallbacks = [];
     var lineTypeCallbacks = [];
 
+    this.lineThickness = 1;
     this.lineType = "Solid";
 
     var self = this;
@@ -13,6 +14,7 @@ function FreehandOptions() {
 
         var lineThicknessSlider = new LabeledSlider(parent, "Line thickness", "line-thickness-slider-ctrl",
             1, 100, 1, 1, "px", function (value) {
+                self.lineThickness = value;
                 lineThicknessCallbacks.forEach(callback => callback(value));
             });
 
@@ -25,7 +27,7 @@ function FreehandOptions() {
 
         var lineType = new LabeledSelect(parent, "Line type", "line-type-select-ctrl",
             ["------- Solid", "- - - - Dashed", "........ Dotted"], ["Solid", "Dashed", "Dotted"],
-            function(lineType) {
+            function (lineType) {
                 self.lineType = lineType;
                 console.log("Line type changed to", lineType);
             });
@@ -39,7 +41,7 @@ function FreehandOptions() {
         opacityCallbacks.push(callback);
     }
 
-    this.onLineTypeChanged = function(callback) {
+    this.onLineTypeChanged = function (callback) {
         lineTypeCallbacks.push(callback);
     }
 }
@@ -66,7 +68,7 @@ function LabeledSlider(parent, label, sliderId, min, max, value, step, valueSuff
         }
     });
 
-    this.value = function() {
+    this.value = function () {
         return sliderCtrl.value();
     }
 }
@@ -79,19 +81,18 @@ function LabeledSelect(parent, label, selectId, optionNames, optionValues, value
     container.parent(parent);
 
     var selectCtrl = createSelect();
-    if (!optionValues)
-    {
+    if (!optionValues) {
         optionNames.forEach(opt => selectCtrl.option(opt));
-    } else {
-        for (var i = 0; i < optionNames.length; i++)
-        {
+    }
+    else {
+        for (var i = 0; i < optionNames.length; i++) {
             selectCtrl.option(optionNames[i], optionValues[i]);
         }
     }
     selectCtrl.parent(select(`#${selectId} .select`));
 
     if (valueSelectedListener) {
-        selectCtrl.changed(function() {
+        selectCtrl.changed(function () {
             valueSelectedListener(selectCtrl.value());
         });
     }

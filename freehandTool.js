@@ -16,6 +16,9 @@ function FreehandTool() {
     // A reference to the ColourPalette. Set from the setColourPalette function.
     var colourPalette = null;
 
+    var lastDotX = -1;
+    var lastDotY = -1;
+
     this.draw = function () {
         //if the mouse is pressed
         if (mouseIsPressed) {
@@ -39,6 +42,8 @@ function FreehandTool() {
         else {
             previousMouseX = -1;
             previousMouseY = -1;
+            lastDotX = -1;
+            lastDotY = -1;
         }
     };
 
@@ -76,19 +81,21 @@ function FreehandTool() {
         }
         else {
             var d = dist(previousMouseX, previousMouseY, mouseX, mouseY);
-            console.log(`pmx, pmy, mouseX, mouseY, distance: ${previousMouseX}, ${previousMouseY}, ${mouseX}, ${mouseY}, ${d}`);
 
             if (d > 0 && options.lineType === 'Dotted') {
-                var xDiff = abs(mouseX - previousMouseX);
-                var yDiff = abs(mouseY - previousMouseY);
-                for (var p = 0; p <= d; p++) {
-                    var x = lerp(previousMouseX, mouseX, p);
-                    var y = lerp(previousMouseY, mouseY, p);
-                    console.log(`(${x}, ${y}) at ${p}`);
-                    // if (p % 2 === 0) {
-                    //     point(x,y);
-                    // }
-                    point(x, y);
+                var steps = ceil(d / options.lineThickness);
+                var step = 1.0 / steps;
+                var gap = 2 * options.lineThickness;
+
+                for (var s = 0; s < steps; s++) {
+                    var x = lerp(previousMouseX, mouseX, (s + 1) * step);
+                    var y = lerp(previousMouseY, mouseY, (s + 1) * step);
+
+                    if (lastDotX === -1 || dist(lastDotX, lastDotY, x, y) > gap) {
+                        ellipse(x, y, options.lineThickness);
+                        lastDotX = x;
+                        lastDotY = y;
+                    }
                 }
             }
         }
