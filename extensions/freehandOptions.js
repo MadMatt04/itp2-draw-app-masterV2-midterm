@@ -4,11 +4,13 @@ function FreehandOptions() {
     var opacityCallbacks = [];
     var lineTypeCallbacks = [];
     var eraserCallbacks = [];
+    var jitterCallbacks = [];
 
 
     this.lineThickness = 1;
     this.lineType = "Solid";
     this.eraserMode = false;
+    this.jitterRadius = 0;
 
     var self = this;
 
@@ -42,6 +44,12 @@ function FreehandOptions() {
             eraserCallbacks.forEach(callback => callback(value));
         });
 
+        var jitterRadius = new LabeledSlider(parent, "Jitter radius", "jitter-radius-slider-ctrl",
+            0, 20, 0, 1, "px", function (value) {
+                self.jitterRadius = value;
+                jitterCallbacks.forEach(callback => callback(value));
+            });
+
     }
 
     this.onLineThicknessChanged = function (callback) {
@@ -58,6 +66,10 @@ function FreehandOptions() {
 
     this.onEraserModeChanged = function(callback) {
         eraserCallbacks.push(callback);
+    }
+
+    this.onJitterRadiusChanged = function(callback) {
+        jitterCallbacks.push(callback);
     }
 }
 
