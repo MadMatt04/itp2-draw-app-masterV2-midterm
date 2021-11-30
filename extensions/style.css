@@ -1,8 +1,10 @@
-.ctrl-label {
+.ctrl-label,
+.box.options label {
     font-family: "Arial Narrow", Arial, sans-serif;
-    font-size: 100%;
+    font-size: 80%;
 }
 
 .slider-ctrl span {
     margin-right: 4px;
 }
+

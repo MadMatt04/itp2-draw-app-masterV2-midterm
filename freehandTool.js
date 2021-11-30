@@ -19,7 +19,7 @@ function FreehandTool() {
     var lastDotX = -1;
     var lastDotY = -1;
 
-    this.draw = function () {
+    this.draw = function() {
         //if the mouse is pressed
         if (mouseIsPressed) {
             //check if they previousX and Y are -1. set them to the current
@@ -47,35 +47,48 @@ function FreehandTool() {
         }
     };
 
-    this.unselectTool = function () {
+    this.unselectTool = function() {
         options = null;
         select(".options").html("");
         strokeWeight(1);
         colourPalette.alpha(255);
+        noErase();
+        cursor(ARROW);
     };
 
-    this.populateOptions = function () {
+    this.populateOptions = function() {
         options = new FreehandOptions();
         options.createUi(select(".options"));
 
-        options.onLineThicknessChanged(function (lineThickness) {
+        options.onLineThicknessChanged(function(lineThickness) {
             console.log("Line thickness changed to", lineThickness, "px.");
             strokeWeight(lineThickness);
-        })
+        });
 
-        options.onOpacityChanged(function (alpha) {
+        options.onOpacityChanged(function(alpha) {
             var mappedAlpha = Math.round(map(alpha, 0.0, 1.0, 0, 255));
             console.log(`Alpha ${alpha} mapped to range 0-255: ${mappedAlpha}.`);
             colourPalette.alpha(mappedAlpha);
+        });
+
+        options.onEraserModeChanged(function(eraserMode) {
+            if (eraserMode === true) {
+                erase();
+                cursor('assets/eraser.cur');
+            }
+            else {
+                noErase();
+                cursor(ARROW);
+            }
         })
     };
 
-    this.setColourPalette = function (palette) {
+    this.setColourPalette = function(palette) {
         console.log("Freehand tool received colour palette ", palette, ".");
         colourPalette = palette;
     }
 
-    var drawLine = function () {
+    var drawLine = function() {
         if (options.lineType === 'Solid') {
             line(previousMouseX, previousMouseY, mouseX, mouseY);
         }

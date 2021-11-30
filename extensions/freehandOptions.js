@@ -3,9 +3,12 @@ function FreehandOptions() {
     var lineThicknessCallbacks = [];
     var opacityCallbacks = [];
     var lineTypeCallbacks = [];
+    var eraserCallbacks = [];
+
 
     this.lineThickness = 1;
     this.lineType = "Solid";
+    this.eraserMode = false;
 
     var self = this;
 
@@ -25,12 +28,20 @@ function FreehandOptions() {
                 opacityCallbacks.forEach(callback => callback(alphaValue));
             });
 
-        var lineType = new LabeledSelect(parent, "Line type", "line-type-select-ctrl",
+        var lineTypeSelect = new LabeledSelect(parent, "Line type", "line-type-select-ctrl",
             ["------- Solid", "- - - - Dashed", "........ Dotted"], ["Solid", "Dashed", "Dotted"],
             function (lineType) {
                 self.lineType = lineType;
+                lineTypeCallbacks.forEach(callback => callback(lineType));
                 console.log("Line type changed to", lineType);
             });
+
+        var eraserCheckbox = new EraserCheckbox(parent, function(value) {
+            console.log("Eraser mode", value === true ? "on." : "off.", value);
+            self.eraserMode = value;
+            eraserCallbacks.forEach(callback => callback(value));
+        });
+
     }
 
     this.onLineThicknessChanged = function (callback) {
@@ -43,6 +54,10 @@ function FreehandOptions() {
 
     this.onLineTypeChanged = function (callback) {
         lineTypeCallbacks.push(callback);
+    }
+
+    this.onEraserModeChanged = function(callback) {
+        eraserCallbacks.push(callback);
     }
 }
 
@@ -76,7 +91,7 @@ function LabeledSlider(parent, label, sliderId, min, max, value, step, valueSuff
 function LabeledSelect(parent, label, selectId, optionNames, optionValues, valueSelectedListener) {
     var container = createDiv(`<span class="ctrl-label ctrl-title">${label}:</label></span>` +
         `<span class="select"></span>`);
-    container.class("slider-ctrl");
+    container.class("select-ctrl");
     container.id(selectId);
     container.parent(parent);
 
@@ -95,5 +110,16 @@ function LabeledSelect(parent, label, selectId, optionNames, optionValues, value
         selectCtrl.changed(function () {
             valueSelectedListener(selectCtrl.value());
         });
+    }
+}
+
+function EraserCheckbox(parent, valueChangedListener) {
+    var checkboxCtrl = createCheckbox("Eraser mode", false);
+    checkboxCtrl.parent(parent);
+
+    if (valueChangedListener) {
+        checkboxCtrl.changed(function() {
+            valueChangedListener(checkboxCtrl.checked());
+        })
     }
 }
