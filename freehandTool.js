@@ -71,6 +71,12 @@ function FreehandTool() {
             colourPalette.alpha(mappedAlpha);
         });
 
+        options.onLineTypeChanged(function(lineType) {
+            if (lineType === 'Dashed') {
+                alert("Not implemented yet.");
+            }
+        })
+
         options.onEraserModeChanged(function(eraserMode) {
             if (eraserMode === true) {
                 erase();
