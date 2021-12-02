@@ -17,6 +17,8 @@ function FreehandOptions() {
     // Creates the UI for setting the option
     this.createUi = function (parent) {
 
+        // TODO create some better layout
+
         var lineThicknessSlider = new LabeledSlider(parent, "Line thickness", "line-thickness-slider-ctrl",
             1, 100, 1, 1, "px", function (value) {
                 self.lineThickness = value;

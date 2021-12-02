@@ -3,6 +3,7 @@
 var toolbox = null;
 var colourP = null;
 var helpers = null;
+var layerManager = null;
 
 
 function setup() {
@@ -31,6 +32,10 @@ function setup() {
 			tool.setColourPalette(colourP);
 		}
 	});
+
+	// Layers
+	layerManager = new LayerManager(c.width, c.height);
+	console.log(`w: ${c.width}, h: ${c.height}`);
 
 }
 

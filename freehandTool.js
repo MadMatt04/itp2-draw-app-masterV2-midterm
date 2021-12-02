@@ -75,7 +75,7 @@ function FreehandTool() {
             if (lineType === 'Dashed') {
                 alert("Not implemented yet.");
             }
-        })
+        });
 
         options.onEraserModeChanged(function(eraserMode) {
             if (eraserMode === true) {
@@ -86,7 +86,9 @@ function FreehandTool() {
                 noErase();
                 cursor(ARROW);
             }
-        })
+        });
+
+        // TODO jitter not implemented yet
     };
 
     this.setColourPalette = function(palette) {

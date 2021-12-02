@@ -53,16 +53,20 @@ html, body {
 	margin: 5px;
 }
 
+.layers {
+	grid-area: layers;
+}
+
 
 	.wrapper {
 		display: grid;
 		height: 100%;
-		grid-template-columns: 70px 230px  minmax(500px, 1fr);
+		grid-template-columns: 70px 230px 230px  minmax(500px, 1fr);
 		grid-template-rows: 35px minmax(500px, 1fr) 160px;
 		grid-template-areas:
-               "header header header"
-				"sidebar content content"
-                "colourP colourP options";
+               "header header header header"
+				"sidebar content content content"
+                "colourP colourP layers options";
 		background-color: #fff;
 		color: #444;
 	}
