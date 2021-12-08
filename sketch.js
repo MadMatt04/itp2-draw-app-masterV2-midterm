@@ -13,9 +13,12 @@ function setup() {
 	var c = createCanvas(canvasContainer.size().width, canvasContainer.size().height);
 	c.parent("content");
 
+	layerManager = new LayerManager(c.width, c.height);
+	console.log(`w: ${c.width}, h: ${c.height}`);
+
 	//create helper functions and the colour palette
 	helpers = new HelperFunctions();
-	colourP = new ColourPalette();
+	colourP = new ColourPalette(layerManager);
 
 	//create a toolbox for storing the tools
 	toolbox = new Toolbox();
@@ -27,19 +30,26 @@ function setup() {
 	toolbox.addTool(new mirrorDrawTool());
 	background(255);
 
+	// Layers
+
+
 	toolbox.tools.forEach(tool => {
 		if (tool.hasOwnProperty("setColourPalette")) {
 			tool.setColourPalette(colourP);
 		}
-	});
 
-	// Layers
-	layerManager = new LayerManager(c.width, c.height);
-	console.log(`w: ${c.width}, h: ${c.height}`);
+		if (tool.hasOwnProperty("setGraphics")) {
+			tool.setGraphics(layerManager.currentLayer().graphics);
+		}
+	});
 
 }
 
 function draw() {
+
+	// Clear everything to make the layers work properly.
+	clear();
+
 	//call the draw function from the selected tool.
 	//hasOwnProperty is a javascript function that tests
 	//if an object contains a particular method or property
@@ -49,4 +59,6 @@ function draw() {
 	} else {
 		alert("it doesn't look like your tool has a draw method!");
 	}
+
+	layerManager.draw();
 }

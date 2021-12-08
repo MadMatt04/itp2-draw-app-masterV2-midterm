@@ -15,7 +15,18 @@ function LayerManager(layerWidth, layerHeight) {
         currentLayerIndex = min(layerIndex, this.layers.length - 1);
     }
 
+    this.draw = function() {
+        this.layers.forEach(layer => {
+            if (layer.visible) {
+                layer.draw();
+            }
+        });
+    }
+
+    this.graphics = function() {
+        return this.currentLayer().graphics;
+    }
+
     console.log("pixels", pixels);
     console.log("pixelDensity", pixelDensity());
-
 }

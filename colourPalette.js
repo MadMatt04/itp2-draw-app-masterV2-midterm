@@ -1,5 +1,5 @@
 //Displays and handles the colour palette.
-function ColourPalette() {
+function ColourPalette(graphicsProvider) {
 	//a list of web colour strings
 	this.colours = ["black", "silver", "gray", "white", "maroon", "red", "purple",
 		"orange", "pink", "fuchsia", "green", "lime", "olive", "yellow", "navy",
@@ -22,6 +22,10 @@ function ColourPalette() {
 		setFillAndStroke();
 	}
 
+	var graphics = function() {
+		return graphicsProvider.graphics();
+	}
+
 	var colourClick = function() {
 		//remove the old border
 		var current = select("#" + self.selectedColour + "Swatch");
@@ -41,16 +45,16 @@ function ColourPalette() {
 	var setFillAndStroke = function() {
 		var colorObject = color(self.selectedColour);
 		colorObject.setAlpha(alpha);
-		fill(colorObject);
-		stroke(colorObject);
+		graphics().fill(colorObject);
+		graphics().stroke(colorObject);
 	}
 
 	//load in the colours
 	this.loadColours = function() {
 		//set the fill and stroke properties to be black at the start of the programme
 		//running
-		fill(this.colours[0]);
-		stroke(this.colours[0]);
+		graphics().fill(this.colours[0]);
+		graphics().stroke(this.colours[0]);
 
 		//for each colour create a new div in the html for the colourSwatches
 		for (var i = 0; i < this.colours.length; i++) {

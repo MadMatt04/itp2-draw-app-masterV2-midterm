@@ -16,6 +16,9 @@ function FreehandTool() {
     // A reference to the ColourPalette. Set from the setColourPalette function.
     var colourPalette = null;
 
+    // A reference to the current graphics object we're drawing to
+    var graphics = null;
+
     var lastDotX = -1;
     var lastDotY = -1;
 
@@ -50,9 +53,9 @@ function FreehandTool() {
     this.unselectTool = function() {
         options = null;
         select(".options").html("");
-        strokeWeight(1);
+        graphics.strokeWeight(1);
         colourPalette.alpha(255);
-        noErase();
+        graphics.noErase();
         cursor(ARROW);
     };
 
@@ -62,7 +65,7 @@ function FreehandTool() {
 
         options.onLineThicknessChanged(function(lineThickness) {
             console.log("Line thickness changed to", lineThickness, "px.");
-            strokeWeight(lineThickness);
+            graphics.strokeWeight(lineThickness);
         });
 
         options.onOpacityChanged(function(alpha) {
@@ -80,10 +83,15 @@ function FreehandTool() {
         options.onEraserModeChanged(function(eraserMode) {
             if (eraserMode === true) {
                 erase();
+                graphics.erase();
+                //blendMode(REMOVE);
+
                 cursor('assets/eraser.cur');
             }
             else {
+                graphics.noErase();
                 noErase();
+                //blendMode(BLEND);
                 cursor(ARROW);
             }
         });
@@ -92,13 +100,18 @@ function FreehandTool() {
     };
 
     this.setColourPalette = function(palette) {
-        console.log("Freehand tool received colour palette ", palette, ".");
+        console.log("Freehand tool received colour palette", palette, ".");
         colourPalette = palette;
+    }
+
+    this.setGraphics = function(g) {
+        console.log("Graphics set to", g, ".");
+        graphics = g;
     }
 
     var drawLine = function() {
         if (options.lineType === 'Solid') {
-            line(previousMouseX, previousMouseY, mouseX, mouseY);
+            graphics.line(previousMouseX, previousMouseY, mouseX, mouseY);
         }
         else {
             var d = dist(previousMouseX, previousMouseY, mouseX, mouseY);
@@ -113,7 +126,7 @@ function FreehandTool() {
                     var y = lerp(previousMouseY, mouseY, (s + 1) * step);
 
                     if (lastDotX === -1 || dist(lastDotX, lastDotY, x, y) > gap) {
-                        ellipse(x, y, options.lineThickness);
+                        graphics.ellipse(x, y, options.lineThickness);
                         lastDotX = x;
                         lastDotY = y;
                     }
