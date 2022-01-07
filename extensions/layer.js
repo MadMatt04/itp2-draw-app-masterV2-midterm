@@ -5,7 +5,7 @@ function Layer(name, layerWidth, layerHeight) {
 
     this.visible = true;
 
-    this.opacity = 1.0;
+    var alpha = 255;
 
     var self = this;
 

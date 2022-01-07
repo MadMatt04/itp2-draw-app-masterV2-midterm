@@ -46,7 +46,7 @@ function FreehandOptions() {
             eraserCallbacks.forEach(callback => callback(value));
         });
 
-        var jitterRadius = new LabeledSlider(parent, "Jitter radius", "jitter-radius-slider-ctrl",
+        var jitterSlider = new LabeledSlider(parent, "Jitter radius", "jitter-radius-slider-ctrl",
             0, 20, 0, 1, "px", function (value) {
                 self.jitterRadius = value;
                 jitterCallbacks.forEach(callback => callback(value));
