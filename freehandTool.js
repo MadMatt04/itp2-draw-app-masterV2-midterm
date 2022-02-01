@@ -96,7 +96,10 @@ function FreehandTool() {
             }
         });
 
-        // TODO jitter not implemented yet
+
+        options.onJitterRadiusChanged(function() {
+
+        });
     };
 
     this.setColourPalette = function(palette) {
@@ -110,13 +113,15 @@ function FreehandTool() {
     }
 
     var drawLine = function() {
-        if (options.lineType === 'Solid') {
+        var jitter = options.jitterRadius;
+
+        if (options.lineType === 'Solid' && jitter === 0) {
             graphics.line(previousMouseX, previousMouseY, mouseX, mouseY);
         }
         else {
             var d = dist(previousMouseX, previousMouseY, mouseX, mouseY);
 
-            if (d > 0 && options.lineType === 'Dotted') {
+            if (d > 0 && (options.lineType === 'Dotted' || jitter > 0)) {
                 var steps = ceil(d / options.lineThickness);
                 var step = 1.0 / steps;
                 var gap = 2 * options.lineThickness;
@@ -125,10 +130,18 @@ function FreehandTool() {
                     var x = lerp(previousMouseX, mouseX, (s + 1) * step);
                     var y = lerp(previousMouseY, mouseY, (s + 1) * step);
 
+
                     if (lastDotX === -1 || dist(lastDotX, lastDotY, x, y) > gap) {
-                        graphics.ellipse(x, y, options.lineThickness);
+
                         lastDotX = x;
                         lastDotY = y;
+
+                        if (jitter > 0) {
+                            x = random(x-jitter, x+jitter+1);
+                            y = random(y-jitter, y+jitter+1);
+                        }
+
+                        graphics.ellipse(x, y, options.lineThickness);
                     }
                 }
             }
