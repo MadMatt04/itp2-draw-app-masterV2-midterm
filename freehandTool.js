@@ -75,8 +75,14 @@ function FreehandTool() {
         });
 
         options.onLineTypeChanged(function(lineType) {
-            if (lineType === 'Dashed') {
-                alert("Not implemented yet.");
+
+            if (lineType === 'Jitter') {
+                options.jitterSlider.setVisible(true);
+            } else {
+                options.jitterSlider.setVisible(false);
+                if (lineType === 'Dashed') {
+                    alert("Not implemented yet.");
+                }
             }
         });
 
@@ -115,10 +121,10 @@ function FreehandTool() {
     var drawLine = function() {
         var jitter = options.jitterRadius;
 
-        if (options.lineType === 'Solid' && jitter === 0) {
+        if (options.lineType === 'Solid') {
             graphics.line(previousMouseX, previousMouseY, mouseX, mouseY);
         }
-        else if (jitter > 0) {
+        else if (options.lineType === 'Jitter') {
             drawJitter(jitter);
         }
         else {

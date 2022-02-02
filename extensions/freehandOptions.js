@@ -33,7 +33,8 @@ function FreehandOptions() {
             });
 
         var lineTypeSelect = new LabeledSelect(parent, "Line type", "line-type-select-ctrl",
-            ["------- Solid", "- - - - Dashed", "........ Dotted"], ["Solid", "Dashed", "Dotted"],
+            ["------- Solid", "- - - - Dashed", "........ Dotted", ".*.*.*.* Jitter"],
+            ["Solid", "Dashed", "Dotted", "Jitter"],
             function (lineType) {
                 self.lineType = lineType;
                 lineTypeCallbacks.forEach(callback => callback(lineType));
@@ -46,11 +47,12 @@ function FreehandOptions() {
             eraserCallbacks.forEach(callback => callback(value));
         });
 
-        var jitterSlider = new LabeledSlider(parent, "Jitter radius", "jitter-radius-slider-ctrl",
+        self.jitterSlider = new LabeledSlider(parent, "Jitter radius", "jitter-radius-slider-ctrl",
             0, 20, 0, 1, "px", function (value) {
                 self.jitterRadius = value;
                 jitterCallbacks.forEach(callback => callback(value));
             });
+        self.jitterSlider.setVisible(false);
 
     }
 
@@ -99,6 +101,14 @@ function LabeledSlider(parent, label, sliderId, min, max, value, step, valueSuff
 
     this.value = function () {
         return sliderCtrl.value();
+    }
+
+    this.setVisible = function(visible) {
+        if (visible) {
+            container.show();
+        } else {
+            container.hide();
+        }
     }
 }
 
