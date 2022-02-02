@@ -7,6 +7,7 @@ var layerManager = null;
 
 
 function setup() {
+	testPerpVector();
 
 	//create a canvas to fill the content div from index.html
 	canvasContainer = select('#content');

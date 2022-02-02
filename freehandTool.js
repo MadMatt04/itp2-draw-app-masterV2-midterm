@@ -118,33 +118,57 @@ function FreehandTool() {
         if (options.lineType === 'Solid' && jitter === 0) {
             graphics.line(previousMouseX, previousMouseY, mouseX, mouseY);
         }
+        else if (jitter > 0) {
+            drawJitter(jitter);
+        }
         else {
-            var d = dist(previousMouseX, previousMouseY, mouseX, mouseY);
+            drawDotted();
+        }
+    };
 
-            if (d > 0 && (options.lineType === 'Dotted' || jitter > 0)) {
-                var steps = ceil(d / options.lineThickness);
-                var step = 1.0 / steps;
-                var gap = 2 * options.lineThickness;
+    var drawJitter = function(jitter) {
+        var v1 = createVector(previousMouseX, previousMouseY);
+        var v2 = createVector(mouseX, mouseY);
 
-                for (var s = 0; s < steps; s++) {
-                    var x = lerp(previousMouseX, mouseX, (s + 1) * step);
-                    var y = lerp(previousMouseY, mouseY, (s + 1) * step);
+        var d = p5.Vector.dist(v1, v2);
+        if (d > 0) {
+            var actualJitter = floor(random(0, jitter)) + 1;
+            var vp = getPerpendicularVector(v1, v2, actualJitter);
+            if (randomBoolean()) {
+                vp.mult(-1.0);
+            }
+
+            var steps = ceil(d / options.lineThickness);
+            var step = 1.0 / steps;
+
+            for (var s = 0; s < steps; s++) {
+                var x = lerp(previousMouseX, mouseX, (s + 1) * step) + vp.x;
+                var y = lerp(previousMouseY, mouseY, (s + 1) * step) + vp.y;
+
+                graphics.ellipse(x, y, options.lineThickness);
+            }
+        }
+    }
+
+    var drawDotted = function() {
+        var d = dist(previousMouseX, previousMouseY, mouseX, mouseY);
+
+        if (d > 0 && options.lineType === 'Dotted') {
+            var steps = ceil(d / options.lineThickness);
+            var step = 1.0 / steps;
+            var gap = 2 * options.lineThickness;
+
+            for (var s = 0; s < steps; s++) {
+                var x = lerp(previousMouseX, mouseX, (s + 1) * step);
+                var y = lerp(previousMouseY, mouseY, (s + 1) * step);
 
 
-                    if (lastDotX === -1 || dist(lastDotX, lastDotY, x, y) > gap) {
-
-                        lastDotX = x;
-                        lastDotY = y;
-
-                        if (jitter > 0) {
-                            x = random(x-jitter, x+jitter+1);
-                            y = random(y-jitter, y+jitter+1);
-                        }
-
-                        graphics.ellipse(x, y, options.lineThickness);
-                    }
+                if (lastDotX === -1 || dist(lastDotX, lastDotY, x, y) > gap) {
+                    graphics.ellipse(x, y, options.lineThickness);
+                    lastDotX = x;
+                    lastDotY = y;
                 }
             }
         }
-    };
+    }
 }
