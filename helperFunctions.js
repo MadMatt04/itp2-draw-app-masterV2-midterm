@@ -1,4 +1,4 @@
-function HelperFunctions() {
+function HelperFunctions(layerManager) {
 
 	//Jquery click events. Notice that there is no this. at the
 	//start we don't need to do that here because the event will
@@ -9,12 +9,13 @@ function HelperFunctions() {
 		background(255, 255, 255);
 		//call loadPixels to update the drawing state
 		//this is needed for the mirror tool
+		layerManager.currentLayer().graphics.clear();
 		loadPixels();
 	});
 
 	//event handler for the save image button. saves the canvsa to the
 	//local file system.
 	select("#saveImageButton").mouseClicked(function() {
-		saveCanvas("myPicture", "jpg");
+		saveCanvas("myPicture", "png");
 	});
 }

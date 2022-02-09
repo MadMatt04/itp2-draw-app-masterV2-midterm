@@ -7,8 +7,6 @@ var layerManager = null;
 
 
 function setup() {
-	testPerpVector();
-
 	//create a canvas to fill the content div from index.html
 	canvasContainer = select('#content');
 	var c = createCanvas(canvasContainer.size().width, canvasContainer.size().height);
@@ -18,7 +16,7 @@ function setup() {
 	console.log(`w: ${c.width}, h: ${c.height}`);
 
 	//create helper functions and the colour palette
-	helpers = new HelperFunctions();
+	helpers = new HelperFunctions(layerManager);
 	colourP = new ColourPalette(layerManager);
 
 	//create a toolbox for storing the tools
