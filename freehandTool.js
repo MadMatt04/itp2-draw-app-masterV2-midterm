@@ -76,13 +76,13 @@ function FreehandTool() {
 
         options.onLineTypeChanged(function(lineType) {
 
+            lastDotX = -1;
+            lastDotY = -1;
+
             if (lineType === 'Jitter') {
                 options.jitterSlider.setVisible(true);
             } else {
                 options.jitterSlider.setVisible(false);
-                if (lineType === 'Dashed') {
-                    alert("Not implemented yet.");
-                }
             }
         });
 
@@ -127,8 +127,10 @@ function FreehandTool() {
         else if (options.lineType === 'Jitter') {
             drawJitter(jitter);
         }
-        else {
+        else if (options.lineType === 'Dotted') {
             drawDotted();
+        } else {
+            drawDashed();
         }
     };
 
@@ -159,7 +161,7 @@ function FreehandTool() {
     var drawDotted = function() {
         var d = dist(previousMouseX, previousMouseY, mouseX, mouseY);
 
-        if (d > 0 && options.lineType === 'Dotted') {
+        if (d > 0) {
             var steps = ceil(d / options.lineThickness);
             var step = 1.0 / steps;
             var gap = 2 * options.lineThickness;
@@ -174,6 +176,33 @@ function FreehandTool() {
                     lastDotX = x;
                     lastDotY = y;
                 }
+            }
+        }
+    };
+
+    var drawDashed = function() {
+        var v1 = createVector(previousMouseX, previousMouseY);
+        var v2 = createVector(mouseX, mouseY);
+
+        var dv = p5.Vector.sub(v2, v1);
+        dv.mult(0.75);
+
+        if (lastDotX === -1) {
+            lastDotX = previousMouseX;
+            lastDotY = previousMouseY;
+        }
+
+
+        if (dv.mag() > 0) {
+            var endPointX = previousMouseX + dv.x;
+            var endPointY = previousMouseY + dv.y;
+
+            var d = dist(lastDotX, lastDotY, endPointX, endPointY);
+
+            if (d > options.lineThickness) {
+                graphics.line(previousMouseX, previousMouseY, endPointX, endPointY);
+                lastDotX = endPointX;
+                lastDotY = endPointY;
             }
         }
     }
