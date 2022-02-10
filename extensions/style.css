@@ -8,3 +8,47 @@
     margin-right: 4px;
 }
 
+.layers {
+    grid-area: layers;
+    display: grid;
+    height: 100%;
+    background: aqua;
+    grid-template-columns: 10% 10% 10% 10% auto 10%;
+    grid-template-rows: 25% auto 25%;
+    grid-template-areas:
+        "opacityP opacityP opacityP opacityP opacityP opacityP"
+        "layerP layerP layerP layerP layerP layerP"
+        "b1 b2 b3 b4 empty b5"
+    ;
+}
+
+.opacityP {
+    grid-area: opacityP;
+    background: chocolate;
+}
+
+.layerP {
+    grid-area: layerP;
+    overflow-y: scroll;
+    background: darkblue;
+}
+
+/* TODO don-t make them subgrids, flattening problems */
+.layerRow {
+    display: grid;
+    height: auto;
+    grid-template-columns: 20% auto;
+    grid-template-rows: auto;
+    grid-template-areas: "visibilityB layerN";
+}
+
+.visibilityBtn {
+    grid-area: visibilityB;
+    /*max-width: 20%;*/
+    /*background-image: url("../assets/sprayCan.jpg");*/
+}
+
+.layerN {
+    grid-area: layerN;
+}
+

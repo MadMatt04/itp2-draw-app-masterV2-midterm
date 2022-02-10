@@ -4,6 +4,7 @@ var toolbox = null;
 var colourP = null;
 var helpers = null;
 var layerManager = null;
+var layerUi = null;
 
 
 function setup() {
@@ -14,6 +15,7 @@ function setup() {
 
 	layerManager = new LayerManager(c.width, c.height);
 	console.log(`w: ${c.width}, h: ${c.height}`);
+	layerUi = new LayerUi(layerManager);
 
 	//create helper functions and the colour palette
 	helpers = new HelperFunctions(layerManager);
@@ -31,7 +33,6 @@ function setup() {
 
 	// Layers
 
-
 	toolbox.tools.forEach(tool => {
 		if (tool.hasOwnProperty("setColourPalette")) {
 			tool.setColourPalette(colourP);
@@ -42,6 +43,7 @@ function setup() {
 		}
 	});
 
+	layerUi.createUi(select("#layer-ui"));
 }
 
 function draw() {
