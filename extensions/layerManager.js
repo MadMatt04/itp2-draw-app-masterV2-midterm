@@ -1,12 +1,11 @@
 function LayerManager(layerWidth, layerHeight) {
 
-    // TODO the background layer should probably always be white so exporting canvas works properly.
-    this.createLayer = function(name) {
-        return new Layer(name, layerWidth, layerHeight);
+    this.createLayer = function(name, backgroundLayer=false) {
+        return new Layer(name, layerWidth, layerHeight, backgroundLayer);
     };
 
     var currentLayerIndex = 0;
-    this.layers = [this.createLayer("Layer 1")];
+    this.layers = [this.createLayer("Background", true)];
 
     this.currentLayer = function(layerIndex) {
         if (layerIndex === undefined) {

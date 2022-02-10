@@ -1,4 +1,4 @@
-function Layer(name, layerWidth, layerHeight) {
+function Layer(name, layerWidth, layerHeight, backgroundLayer = false) {
     this.name = name;
 
     this.graphics = createGraphics(layerWidth, layerHeight);
@@ -10,11 +10,19 @@ function Layer(name, layerWidth, layerHeight) {
     var self = this;
 
     var init = function() {
-        self.graphics.clear();
+        if (backgroundLayer) {
+            self.graphics.background(255);
+        } else {
+            self.graphics.clear();
+        }
     }
 
     this.draw = function() {
         image(this.graphics, 0, 0);
+    }
+
+    this.isBackgroundLayer = function() {
+        return backgroundLayer;
     }
 
     init();
