@@ -9,9 +9,13 @@ function LineToTool(){
 	var startMouseY = -1;
 	var drawing = false;
 
+	// A reference to the current graphics object we're drawing to
+	var graphics = null;
+
 	//draws the line to the screen 
 	this.draw = function(){
 
+		graphics.reset();
 		//only draw when mouse is clicked
 		if(mouseIsPressed){
 			//if it's the start of drawing a new line
@@ -20,17 +24,16 @@ function LineToTool(){
 				startMouseY = mouseY;
 				drawing = true;
 				//save the current pixel Array
-				loadPixels();
+				graphics.loadPixels();
 			}
 
 			else{
 				//update the screen with the saved pixels to hide any previous
 				//line between mouse pressed and released
-				updatePixels();
+				graphics.updatePixels();
 				//draw the line
-				line(startMouseX, startMouseY, mouseX, mouseY);
+				graphics.line(startMouseX, startMouseY, mouseX, mouseY);
 			}
-
 		}
 
 		else if(drawing){
@@ -43,5 +46,8 @@ function LineToTool(){
 		}
 	};
 
+	this.setGraphics = function(g) {
+		graphics = g;
+	}
 
 }

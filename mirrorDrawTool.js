@@ -20,9 +20,12 @@ function mirrorDrawTool() {
 	var previousOppositeMouseX = -1;
 	var previousOppositeMouseY = -1;
 
+	// A reference to the current graphics object we're drawing to
+	var graphics = null;
+
 	this.draw = function() {
 		//display the last save state of pixels
-		updatePixels();
+		graphics.updatePixels();
 
 		//do the drawing if the mouse is pressed
 		if (mouseIsPressed) {
@@ -38,7 +41,7 @@ function mirrorDrawTool() {
 			//if there are values in the previous locations
 			//draw a line between them and the current positions
 			else {
-				line(previousMouseX, previousMouseY, mouseX, mouseY);
+				graphics.line(previousMouseX, previousMouseY, mouseX, mouseY);
 				previousMouseX = mouseX;
 				previousMouseY = mouseY;
 
@@ -46,7 +49,7 @@ function mirrorDrawTool() {
 				//line of symmetry
 				var oX = this.calculateOpposite(mouseX, "x");
 				var oY = this.calculateOpposite(mouseY, "y");
-				line(previousOppositeMouseX, previousOppositeMouseY, oX, oY);
+				graphics.line(previousOppositeMouseX, previousOppositeMouseY, oX, oY);
 				previousOppositeMouseX = oX;
 				previousOppositeMouseY = oY;
 			}
@@ -63,20 +66,20 @@ function mirrorDrawTool() {
 		//after the drawing is done save the pixel state. We don't want the
 		//line of symmetry to be part of our drawing
 
-		loadPixels();
+		graphics.loadPixels();
 
 		//push the drawing state so that we can set the stroke weight and colour
-		push();
-		strokeWeight(3);
-		stroke("red");
+		graphics.push();
+		graphics.strokeWeight(3);
+		graphics.stroke("red");
 		//draw the line of symmetry
 		if (this.axis == "x") {
-			line(width / 2, 0, width / 2, height);
+			graphics.line(width / 2, 0, width / 2, height);
 		} else {
-			line(0, height / 2, width, height / 2);
+			graphics.line(0, height / 2, width, height / 2);
 		}
 		//return to the original stroke
-		pop();
+		graphics.pop();
 
 	};
 
@@ -135,4 +138,8 @@ function mirrorDrawTool() {
 			}
 		});
 	};
+
+	this.setGraphics = function(g) {
+		graphics = g;
+	}
 }
