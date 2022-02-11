@@ -73,14 +73,14 @@ function LayerUi(layerManager) {
     }
 
     var disableButtons = function() {
-        for (var i = 0; i < layerButtons.length; i++) {
+        for (var i = 1; i < layerButtons.length; i++) {
             layerButtons[i].class(`b${i+1} disabled-btn`)
         }
     }
 
     var enableButtons = function() {
         for (var i = 0; i < layerButtons.length; i++) {
-            layerButtons[i].class(`b${i+1}`)
+            layerButtons[i].class(`b${i+1}`);
         }
     }
 }
