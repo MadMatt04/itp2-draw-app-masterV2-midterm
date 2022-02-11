@@ -1,7 +1,13 @@
 .ctrl-label,
-.box.options label {
+.box.options label,
+.layerN {
     font-family: "Arial Narrow", Arial, sans-serif;
     font-size: 80%;
+}
+
+.layerN {
+    font-size: 70%;
+    font-weight: bold;
 }
 
 .slider-ctrl span {
@@ -12,8 +18,8 @@
     grid-area: layers;
     display: grid;
     height: 100%;
-    background: aqua;
-    grid-template-columns: 10% 10% 10% 10% auto 10%;
+    /*background: aqua;*/
+    grid-template-columns: 15% 15% 15% 15% auto 15%;
     grid-template-rows: 25% auto 25%;
     grid-template-areas:
         "opacityP opacityP opacityP opacityP opacityP opacityP"
@@ -30,25 +36,57 @@
 .layerP {
     grid-area: layerP;
     overflow-y: scroll;
-    background: darkblue;
+    /*background: darkblue;*/
 }
 
-/* TODO don-t make them subgrids, flattening problems */
 .layerRow {
-    display: grid;
-    height: auto;
-    grid-template-columns: 20% auto;
-    grid-template-rows: auto;
-    grid-template-areas: "visibilityB layerN";
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
 }
 
 .visibilityBtn {
-    grid-area: visibilityB;
-    /*max-width: 20%;*/
-    /*background-image: url("../assets/sprayCan.jpg");*/
+    margin-left: 8%;
+    margin-right: 8%;
 }
 
 .layerN {
     grid-area: layerN;
 }
 
+.b1, .b2, .b3, .b4, .b5 {
+
+    width: 95%;
+    height: 80%;
+    object-fit: cover;
+    justify-self: center;
+    align-self: center;
+}
+
+.b1, .b5 {
+    height: 65%;
+    width: 80%;
+}
+
+.b1 {
+    grid-area: b1;
+}
+
+.b2 {
+    grid-area: b2;
+}
+
+.b3 {
+    grid-area: b3;
+}
+
+.b4 {
+    grid-area: b4;
+}
+
+.b5 {
+    grid-area: b5;
+    justify-self: end;
+}
