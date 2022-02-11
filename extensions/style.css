@@ -90,3 +90,7 @@
     grid-area: b5;
     justify-self: end;
 }
+
+.disabled-btn {
+    opacity: 0.5;
+}
