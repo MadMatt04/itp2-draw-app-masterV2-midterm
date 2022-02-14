@@ -30,7 +30,7 @@
 
 .opacityP {
     grid-area: opacityP;
-    background: chocolate;
+    background: wheat;
 }
 
 .layerP {
@@ -45,6 +45,10 @@
     flex-wrap: nowrap;
     justify-content: flex-start;
     align-items: center;
+}
+
+.layerRow.selectedLayer {
+    background: chocolate;
 }
 
 .visibilityBtn {

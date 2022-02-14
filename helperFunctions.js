@@ -9,7 +9,7 @@ function HelperFunctions(layerManager) {
 		background(255, 255, 255);
 		//call loadPixels to update the drawing state
 		//this is needed for the mirror tool
-		layerManager.currentLayer().graphics.clear();
+		layerManager.activeLayer().graphics.clear();
 		loadPixels();
 	});
 

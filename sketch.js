@@ -39,11 +39,12 @@ function setup() {
 		}
 
 		if (tool.hasOwnProperty("setGraphics")) {
-			tool.setGraphics(layerManager.currentLayer().graphics);
+			tool.setGraphics(layerManager.activeLayer().graphics);
 		}
 	});
 
 	layerUi.createUi(select("#layer-ui"));
+	layerManager.onActiveLayerChanged(setGraphicsContext);
 }
 
 function draw() {
@@ -62,4 +63,12 @@ function draw() {
 	}
 
 	layerManager.draw();
+}
+
+function setGraphicsContext(layer) {
+	toolbox.tools.forEach(tool => {
+		if (tool.hasOwnProperty("setGraphics")) {
+			tool.setGraphics(layer.graphics);
+		}
+	});
 }
