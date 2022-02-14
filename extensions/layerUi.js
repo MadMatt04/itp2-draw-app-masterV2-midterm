@@ -50,7 +50,7 @@ function LayerUi(layerManager) {
         layerButtons.push(renameBtn);
         layerButtons.push(deleteBtn);
 
-        disableButtons();
+        enableOrDisableButtons();
     };
 
     var createLayerRows = function() {
@@ -91,13 +91,24 @@ function LayerUi(layerManager) {
         }
     };
 
+    var enableOrDisableButtons = function() {
+        for (var i = 0; i < layerButtons.length; i++) {
+            var enable = i === 0 || !selectedLayer.isBackgroundLayer();
+            if (enable && layerButtons[i].hasClass("disabled-btn")) {
+                layerButtons[i].removeClass("disabled-btn");
+            } else if (!enable && !layerButtons[i].hasClass("disabled-btn")) {
+                layerButtons[i].addClass("disabled-btn");
+            }
+        }
+    }
+
     var addLayer = function() {
         deselectLayer();
         selectedLayer = layerManager.createLayer();
         layerManager.activeLayer(selectedLayer);
         var layerRow = createLayerRow(selectedLayer);
         layerPanel.elt.prepend(layerRow.elt);
-        enableButtons();
+        enableOrDisableButtons();
     };
 
     var deleteLayer = function() {
@@ -112,6 +123,7 @@ function LayerUi(layerManager) {
                 if (layerRows.length > 0) {
                     layerRows[layerRows.length - 1].addClass("selectedLayer");
                 }
+                enableOrDisableButtons();
             }
         }
     }
