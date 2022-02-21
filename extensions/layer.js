@@ -25,5 +25,9 @@ function Layer(name, layerWidth, layerHeight, backgroundLayer = false) {
         return backgroundLayer;
     }
 
+    this.toggleVisibility = function() {
+        this.visible = !this.visible;
+    }
+
     init();
 }

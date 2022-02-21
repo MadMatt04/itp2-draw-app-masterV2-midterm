@@ -75,8 +75,26 @@ function LayerUi(layerManager) {
         span.addClass('layerN');
         layerRow.child(span);
 
+        var eventConsumed = false;
+
+        visibilityBtn.mousePressed(function() {
+            console.log("img", visibilityBtn);
+
+            layer.toggleVisibility();
+            if (layer.visible) {
+                visibilityBtn.elt.src = "../assets/eye-svgrepo-com-orig.svg";
+            } else {
+                visibilityBtn.elt.src = "../assets/eye-crossed.svg";
+            }
+            eventConsumed = true;
+        });
+
         layerRow.mousePressed(function() {
-            selectLayer(layer, layerRow);
+            if (!eventConsumed) {
+                selectLayer(layer, layerRow);
+            } else {
+                eventConsumed = false;
+            }
         });
 
         return layerRow;
