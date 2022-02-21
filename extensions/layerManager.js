@@ -42,6 +42,33 @@ function LayerManager(layerWidth, layerHeight) {
         return this.layers[this.layers.length - 1];
     };
 
+    this.bottomLayer = function() {
+        return this.layers[0];
+    }
+
+    this.isTopLayer = function(layer) {
+        return this.topLayer() === layer;
+    }
+
+    this.isBottomLayer = function(layer) {
+        return this.bottomLayer() === layer;
+    }
+
+    this.isNextToBottomLayer = function(layer) {
+        return this.layers.length > 1 && this.layers[1] === layer;
+    }
+
+    this.moveLayerUp = function(layer) {
+        // debugger;
+        var index = this.layers.findIndex(l => l === layer);
+        if (index >= 0) {
+            this.layers.splice(index, 1);
+            this.layers.splice(index + 1, 0,  layer);
+        }
+
+        return index + 1;
+    }
+
     this.deleteLayer = function(layer) {
         var layerIndex = this.layers.findIndex(l => l === layer);
         if (layerIndex >= 0) {
@@ -59,13 +86,6 @@ function LayerManager(layerWidth, layerHeight) {
                 layer.draw();
             }
         });
-
-        // for (var i = Object.keys(this.layers).length; i > 0; --i) {
-        //     var layer = this.layers[i];
-        //     if (layer.visible) {
-        //         layer.draw();
-        //     }
-        // }
     }
 
     this.graphics = function() {

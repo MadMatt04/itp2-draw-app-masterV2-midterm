@@ -27,6 +27,7 @@ function LayerUi(layerManager) {
         upBtn.attribute("title", "Move layer up");
         upBtn.addClass("b2");
         parent.child(upBtn);
+        upBtn.mousePressed(moveLayerUp);
 
         var downBtn = createImg("../assets/down-square-svgrepo-com.svg", "Layer down");
         downBtn.attribute("title", "Move layer down");
@@ -78,8 +79,6 @@ function LayerUi(layerManager) {
         var eventConsumed = false;
 
         visibilityBtn.mousePressed(function() {
-            console.log("img", visibilityBtn);
-
             layer.toggleVisibility();
             if (layer.visible) {
                 visibilityBtn.elt.src = "../assets/eye-svgrepo-com-orig.svg";
@@ -103,6 +102,14 @@ function LayerUi(layerManager) {
     var enableOrDisableButtons = function() {
         for (var i = 0; i < layerButtons.length; i++) {
             var enable = i === 0 || !selectedLayer.isBackgroundLayer();
+            if (enable && layerManager.layers.length > 1) {
+                if (i === 1) {
+                    enable = !layerManager.isTopLayer(selectedLayer);
+                } else if (i === 2) {
+                    enable = !layerManager.isNextToBottomLayer(selectedLayer);
+                }
+            }
+
             if (enable && layerButtons[i].hasClass("disabled-btn")) {
                 layerButtons[i].removeClass("disabled-btn");
             }
@@ -110,7 +117,7 @@ function LayerUi(layerManager) {
                 layerButtons[i].addClass("disabled-btn");
             }
         }
-    }
+    };
 
     var addLayer = function() {
         var layer = layerManager.createLayer();
@@ -131,7 +138,7 @@ function LayerUi(layerManager) {
                 enableOrDisableButtons();
             }
         }
-    }
+    };
 
     var deselectLayer = function() {
         if (layerPanel) {
@@ -150,5 +157,11 @@ function LayerUi(layerManager) {
             layerRow.addClass("selectedLayer");
             enableOrDisableButtons();
         }
-    }
+    };
+
+    var moveLayerUp = function() {
+        layerManager.moveLayerUp(selectedLayer);
+        // TODO handle UI
+        console.log("Layers", layerManager.layers);
+    };
 }
