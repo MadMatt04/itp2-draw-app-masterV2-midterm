@@ -55,12 +55,11 @@ function LayerUi(layerManager) {
 
     var createLayerRows = function() {
         layerManager.layers.slice().reverse().forEach(layer => {
-           layerPanel.child(createLayerRow(layer));
+            layerPanel.child(createLayerRow(layer));
         });
     }
 
     var createLayerRow = function(layer) {
-        console.log(layer.name);
         var layerRow = createDiv();
         layerRow.addClass("layerRow");
         if (layer === selectedLayer) {
@@ -76,19 +75,11 @@ function LayerUi(layerManager) {
         span.addClass('layerN');
         layerRow.child(span);
 
+        layerRow.mousePressed(function() {
+            selectLayer(layer, layerRow);
+        });
+
         return layerRow;
-    };
-
-    var disableButtons = function() {
-        for (var i = 1; i < layerButtons.length; i++) {
-            layerButtons[i].addClass("disabled-btn");
-        }
-    };
-
-    var enableButtons = function() {
-        for (var i = 0; i < layerButtons.length; i++) {
-            layerButtons[i].removeClass("disabled-btn");
-        }
     };
 
     var enableOrDisableButtons = function() {
@@ -96,33 +87,29 @@ function LayerUi(layerManager) {
             var enable = i === 0 || !selectedLayer.isBackgroundLayer();
             if (enable && layerButtons[i].hasClass("disabled-btn")) {
                 layerButtons[i].removeClass("disabled-btn");
-            } else if (!enable && !layerButtons[i].hasClass("disabled-btn")) {
+            }
+            else if (!enable && !layerButtons[i].hasClass("disabled-btn")) {
                 layerButtons[i].addClass("disabled-btn");
             }
         }
     }
 
     var addLayer = function() {
-        deselectLayer();
-        selectedLayer = layerManager.createLayer();
-        layerManager.activeLayer(selectedLayer);
-        var layerRow = createLayerRow(selectedLayer);
+        var layer = layerManager.createLayer();
+        var layerRow = createLayerRow(layer);
         layerPanel.elt.prepend(layerRow.elt);
-        enableOrDisableButtons();
+        selectLayer(layer, layerRow);
     };
 
     var deleteLayer = function() {
         if (window.confirm(`Really remove layer '${selectedLayer.name}'?`)) {
             var deletedLayerIndex = layerManager.deleteLayer(selectedLayer);
             if (deletedLayerIndex >= 0) {
-                selectedLayer = layerManager.topLayer();
-                layerManager.activeLayer(selectedLayer);
+                var layerToSelect = layerManager.topLayer();
                 var layerRows = Array.from(layerPanel.child()).map(layerRow => new p5.Element(layerRow)).reverse();
                 layerRows[deletedLayerIndex].elt.remove();
                 layerRows.splice(deletedLayerIndex, 1);
-                if (layerRows.length > 0) {
-                    layerRows[layerRows.length - 1].addClass("selectedLayer");
-                }
+                selectLayer(layerToSelect, layerRows[layerRows.length - 1]);
                 enableOrDisableButtons();
             }
         }
@@ -135,4 +122,15 @@ function LayerUi(layerManager) {
             });
         }
     };
+
+    var selectLayer = function(layer, layerRow) {
+        if (selectedLayer !== layer) {
+            deselectLayer();
+            selectedLayer = layer;
+            console.log("Selected layer", layer.name);
+            layerManager.activeLayer(selectedLayer);
+            layerRow.addClass("selectedLayer");
+            enableOrDisableButtons();
+        }
+    }
 }
