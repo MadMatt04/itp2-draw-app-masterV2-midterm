@@ -33,6 +33,7 @@ function LayerUi(layerManager) {
         downBtn.attribute("title", "Move layer down");
         downBtn.addClass("b3");
         parent.child(downBtn);
+        downBtn.mousePressed(moveLayerDown);
 
         var renameBtn = createImg("../assets/rename-svgrepo-com.svg", "Rename layer");
         renameBtn.attribute("title", "Rename layer");
@@ -82,7 +83,8 @@ function LayerUi(layerManager) {
             layer.toggleVisibility();
             if (layer.visible) {
                 visibilityBtn.elt.src = "../assets/eye-svgrepo-com-orig.svg";
-            } else {
+            }
+            else {
                 visibilityBtn.elt.src = "../assets/eye-crossed.svg";
             }
             eventConsumed = true;
@@ -91,7 +93,8 @@ function LayerUi(layerManager) {
         layerRow.mousePressed(function() {
             if (!eventConsumed) {
                 selectLayer(layer, layerRow);
-            } else {
+            }
+            else {
                 eventConsumed = false;
             }
         });
@@ -105,7 +108,8 @@ function LayerUi(layerManager) {
             if (enable && layerManager.layers.length > 1) {
                 if (i === 1) {
                     enable = !layerManager.isTopLayer(selectedLayer);
-                } else if (i === 2) {
+                }
+                else if (i === 2) {
                     enable = !layerManager.isNextToBottomLayer(selectedLayer);
                 }
             }
@@ -149,19 +153,33 @@ function LayerUi(layerManager) {
     };
 
     var selectLayer = function(layer, layerRow) {
-        if (selectedLayer !== layer) {
-            deselectLayer();
-            selectedLayer = layer;
-            console.log("Selected layer", layer.name);
-            layerManager.activeLayer(selectedLayer);
-            layerRow.addClass("selectedLayer");
-            enableOrDisableButtons();
-        }
+        deselectLayer();
+        selectedLayer = layer;
+        console.log("Selected layer", layer.name);
+        layerManager.activeLayer(selectedLayer);
+        layerRow.addClass("selectedLayer");
+        enableOrDisableButtons();
     };
 
     var moveLayerUp = function() {
-        layerManager.moveLayerUp(selectedLayer);
-        // TODO handle UI
-        console.log("Layers", layerManager.layers);
+        var layerIndex = layerManager.moveLayerUp(selectedLayer);
+        var layerRows = Array.from(layerPanel.child()).map(layerRow => new p5.Element(layerRow)).reverse();
+        var movedRow = layerRows[layerIndex - 1];
+        var insertBeforeRow = layerRows[layerIndex];
+        movedRow.elt.remove();
+        layerRows.splice(layerIndex - 1, 1);
+        layerPanel.elt.insertBefore(movedRow.elt, insertBeforeRow.elt);
+        selectLayer(selectedLayer, movedRow);
+    };
+
+    var moveLayerDown = function() {
+        var layerIndex = layerManager.moveLayerDown(selectedLayer);
+        var layerRows = Array.from(layerPanel.child()).map(layerRow => new p5.Element(layerRow)).reverse();
+        var movedRow = layerRows[layerIndex + 1];
+        var insertBeforeRow = layerRows[layerIndex - 1];
+        movedRow.elt.remove();
+        layerRows.splice(layerIndex + 1, 1);
+        layerPanel.elt.insertBefore(movedRow.elt, insertBeforeRow.elt);
+        selectLayer(selectedLayer, movedRow);
     };
 }

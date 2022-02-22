@@ -59,7 +59,6 @@ function LayerManager(layerWidth, layerHeight) {
     }
 
     this.moveLayerUp = function(layer) {
-        // debugger;
         var index = this.layers.findIndex(l => l === layer);
         if (index >= 0) {
             this.layers.splice(index, 1);
@@ -67,6 +66,19 @@ function LayerManager(layerWidth, layerHeight) {
         }
 
         return index + 1;
+    }
+
+    this.moveLayerDown = function(layer) {
+        var index = this.layers.findIndex(l => l === layer);
+        if (index >= 0) {
+            this.layers.splice(index, 1);
+            this.layers.splice(index - 1, 0,  layer);
+        }
+
+        return index - 1;
+    }
+
+    var moveLayer = function(layer, direction) {
     }
 
     this.deleteLayer = function(layer) {
