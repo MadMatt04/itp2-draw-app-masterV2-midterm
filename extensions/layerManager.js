@@ -2,6 +2,7 @@ function LayerManager(layerWidth, layerHeight) {
 
     this.layers = [];
     var activeLayerChangedCallbacks = [];
+    var self = this;
 
     this.createLayer = function(name=null, backgroundLayer=false) {
 
@@ -59,26 +60,21 @@ function LayerManager(layerWidth, layerHeight) {
     }
 
     this.moveLayerUp = function(layer) {
-        var index = this.layers.findIndex(l => l === layer);
-        if (index >= 0) {
-            this.layers.splice(index, 1);
-            this.layers.splice(index + 1, 0,  layer);
-        }
-
-        return index + 1;
+        return moveLayer(layer, 1);
     }
 
     this.moveLayerDown = function(layer) {
-        var index = this.layers.findIndex(l => l === layer);
-        if (index >= 0) {
-            this.layers.splice(index, 1);
-            this.layers.splice(index - 1, 0,  layer);
-        }
-
-        return index - 1;
+        return moveLayer(layer, -1);
     }
 
     var moveLayer = function(layer, direction) {
+        var index = self.layers.findIndex(l => l === layer);
+        if (index >= 0) {
+            self.layers.splice(index, 1);
+            self.layers.splice(index + direction, 0,  layer);
+        }
+
+        return index + direction;
     }
 
     this.deleteLayer = function(layer) {

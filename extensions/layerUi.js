@@ -162,24 +162,21 @@ function LayerUi(layerManager) {
     };
 
     var moveLayerUp = function() {
-        var layerIndex = layerManager.moveLayerUp(selectedLayer);
-        var layerRows = Array.from(layerPanel.child()).map(layerRow => new p5.Element(layerRow)).reverse();
-        var movedRow = layerRows[layerIndex - 1];
-        var insertBeforeRow = layerRows[layerIndex];
-        movedRow.elt.remove();
-        layerRows.splice(layerIndex - 1, 1);
-        layerPanel.elt.insertBefore(movedRow.elt, insertBeforeRow.elt);
-        selectLayer(selectedLayer, movedRow);
+        moveLayer(layerManager.moveLayerUp, -1, 0);
     };
 
     var moveLayerDown = function() {
-        var layerIndex = layerManager.moveLayerDown(selectedLayer);
+        moveLayer(layerManager.moveLayerDown, 1, -1);
+    };
+
+    var moveLayer = function(moveLayerMethod, offset, insertBeforeOffset) {
+        var layerIndex = moveLayerMethod.call(layerManager, selectedLayer);
         var layerRows = Array.from(layerPanel.child()).map(layerRow => new p5.Element(layerRow)).reverse();
-        var movedRow = layerRows[layerIndex + 1];
-        var insertBeforeRow = layerRows[layerIndex - 1];
+        var movedRow = layerRows[layerIndex + offset];
+        var insertBeforeRow = layerRows[layerIndex + insertBeforeOffset];
         movedRow.elt.remove();
-        layerRows.splice(layerIndex + 1, 1);
+        layerRows.splice(layerIndex - offset, 1);
         layerPanel.elt.insertBefore(movedRow.elt, insertBeforeRow.elt);
         selectLayer(selectedLayer, movedRow);
-    };
+    }
 }
