@@ -30,7 +30,8 @@
 
 .opacityP {
     grid-area: opacityP;
-    background: wheat;
+    font-size: 60%;
+    /*background: wheat;*/
 }
 
 .layerP {
@@ -97,4 +98,8 @@
 
 .disabled-btn {
     opacity: 0.5;
+}
+
+#layer-opacity-slider-ctrl span.slider input {
+    margin-top: 5px;
 }

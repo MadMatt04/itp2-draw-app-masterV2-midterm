@@ -11,6 +11,12 @@ function LayerUi(layerManager) {
         opacityPanel.addClass("opacityP");
         parent.child(opacityPanel);
 
+        var opacitySlider = new LabeledSlider(opacityPanel, "Opacity", "layer-opacity-slider-ctrl", 0, 100, 100,
+            1, "%", function (value) {
+                // Transform from percentage to a 0.0 to 1.0 range.
+                var alphaValue = value / 100.0;
+            });
+
         layerPanel = createDiv();
         layerPanel.addClass("layerP");
         parent.child(layerPanel);
