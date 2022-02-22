@@ -103,7 +103,4 @@ function LayerManager(layerWidth, layerHeight) {
     this.onActiveLayerChanged = function(callback) {
         activeLayerChangedCallbacks.push(callback);
     }
-
-    console.log("pixels", pixels);
-    console.log("pixelDensity", pixelDensity());
 }

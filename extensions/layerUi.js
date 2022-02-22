@@ -39,6 +39,7 @@ function LayerUi(layerManager) {
         renameBtn.attribute("title", "Rename layer");
         renameBtn.addClass("b4");
         parent.child(renameBtn);
+        renameBtn.mousePressed(renameLayer);
 
         var deleteBtn = createImg("../assets/delete-close-svgrepo-com.svg", "Delete layer");
         deleteBtn.attribute("title", "Delete layer");
@@ -104,7 +105,7 @@ function LayerUi(layerManager) {
 
     var enableOrDisableButtons = function() {
         for (var i = 0; i < layerButtons.length; i++) {
-            var enable = i === 0 || !selectedLayer.isBackgroundLayer();
+            var enable = i === 0 || i === 3 || !selectedLayer.isBackgroundLayer();
             if (enable && layerManager.layers.length > 1) {
                 if (i === 1) {
                     enable = !layerManager.isTopLayer(selectedLayer);
@@ -178,5 +179,19 @@ function LayerUi(layerManager) {
         layerRows.splice(layerIndex - offset, 1);
         layerPanel.elt.insertBefore(movedRow.elt, insertBeforeRow.elt);
         selectLayer(selectedLayer, movedRow);
-    }
+    };
+
+    var renameLayer = function() {
+        var newName = prompt("Rename layer to", selectedLayer.name);
+        selectedLayer.name = newName;
+        var layerRow = findSelectedLayerRow();
+        var span = layerRow.elt.getElementsByTagName("span")[0];
+        span.innerHTML = newName;
+        console.log("SPAN", span);
+    };
+
+    var findSelectedLayerRow = function() {
+        return Array.from(layerPanel.child()).map(layerRow => new p5.Element(layerRow)).find(
+            layerRow => layerRow.hasClass("selectedLayer"));
+    };
 }
