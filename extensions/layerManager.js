@@ -103,4 +103,13 @@ function LayerManager(layerWidth, layerHeight) {
     this.onActiveLayerChanged = function(callback) {
         activeLayerChangedCallbacks.push(callback);
     }
+
+    this.clearAllLayers = function() {
+        this.layers.forEach(layer => {
+            layer.graphics.clear();
+            if (layer.isBackgroundLayer()) {
+                layer.graphics.background(255);
+            }
+        });
+    }
 }
