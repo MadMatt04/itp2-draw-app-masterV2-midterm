@@ -45,6 +45,10 @@ function setup() {
 
 	layerUi.createUi(select("#layer-ui"));
 	layerManager.onActiveLayerChanged(setGraphicsContext);
+
+	// TODO remove
+	let pink = color(255, 102, 204);
+	console.log("ALPHA PINK", alpha(pink));
 }
 
 function draw() {

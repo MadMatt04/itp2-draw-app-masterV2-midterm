@@ -15,6 +15,8 @@ function LayerUi(layerManager) {
             1, "%", function (value) {
                 // Transform from percentage to a 0.0 to 1.0 range.
                 var alphaValue = value / 100.0;
+                var mappedAlpha = Math.round(map(alphaValue, 0.0, 1.0, 0, 255));
+                selectedLayer.alpha(mappedAlpha);
             });
 
         layerPanel = createDiv();

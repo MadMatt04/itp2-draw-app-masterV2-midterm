@@ -31,6 +31,7 @@
 .opacityP {
     grid-area: opacityP;
     font-size: 60%;
+    padding-top: 6px;
     /*background: wheat;*/
 }
 
@@ -100,6 +101,7 @@
     opacity: 0.5;
 }
 
-#layer-opacity-slider-ctrl span.slider input {
-    margin-top: 5px;
+#layer-opacity-slider-ctrl span.slider {
+    /* TODO */
+    margin-top: 10px;
 }
