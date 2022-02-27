@@ -11,7 +11,10 @@ function LayerUi(layerManager) {
         opacityPanel.addClass("opacityP");
         parent.child(opacityPanel);
 
-        var opacitySlider = new LabeledSlider(opacityPanel, "Opacity", "layer-opacity-slider-ctrl", 0, 100, 100,
+        // Clamp the lower limit of opacity to 1%, because setting this to 0 also removes the color pixel information
+        // from the underlying pixel array. Besides, if you want to fully remove the layer from rendering, you can
+        // always click the eye (visibility) icon in the layers panel to make a layer invisible.
+        var opacitySlider = new LabeledSlider(opacityPanel, "Opacity", "layer-opacity-slider-ctrl", 1, 100, 100,
             1, "%", function (value) {
                 // Transform from percentage to a 0.0 to 1.0 range.
                 var alphaValue = value / 100.0;
