@@ -100,8 +100,3 @@
 .disabled-btn {
     opacity: 0.5;
 }
-
-#layer-opacity-slider-ctrl span.slider {
-    /* TODO */
-    margin-top: 10px;
-}

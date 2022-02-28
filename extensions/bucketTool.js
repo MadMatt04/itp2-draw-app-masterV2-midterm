@@ -1,6 +1,6 @@
 class BucketTool {
     constructor() {
-        this.icon = "assets/paint-bucket-svgrepo-com.svg"
+        this.icon = "assets/paint-bucket-svgrepo-com-adjusted.svg"
         this.name = "bucket";
     }
 
