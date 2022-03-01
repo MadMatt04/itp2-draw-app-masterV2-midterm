@@ -89,7 +89,7 @@ function LabeledSlider(parent, label, sliderId, min, max, value, step, valueSuff
 
     sliderCtrl.mouseMoved(function () {
         if (mouseIsPressed) {
-            var currentValue = sliderCtrl.value();
+            var currentValue = Math.round(sliderCtrl.value());
             valueLabel.html(`${currentValue}&nbsp;${valueSuffix}`);
             if (valueChangedListener) {
                 valueChangedListener(currentValue);

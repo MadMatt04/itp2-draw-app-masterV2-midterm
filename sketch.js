@@ -37,6 +37,8 @@ function setup() {
     toolbox.tools.forEach(tool => {
         if (tool.hasOwnProperty("setColourPalette")) {
             tool.setColourPalette(colourP);
+        } else if (Object.getPrototypeOf(tool).hasOwnProperty("colourPalette")) {
+            tool.colourPalette = colourP;
         }
     });
 
