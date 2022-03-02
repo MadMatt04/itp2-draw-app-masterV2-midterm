@@ -13,7 +13,8 @@ function Layer(name, layerWidth, layerHeight, backgroundLayer = false) {
     var init = function() {
         if (backgroundLayer) {
             self.graphics.background(255);
-        } else {
+        }
+        else {
             self.graphics.clear();
         }
     }
@@ -45,7 +46,6 @@ function Layer(name, layerWidth, layerHeight, backgroundLayer = false) {
 
     var adjustOpacity = function() {
 
-        var count = 0;
         self.graphics.loadPixels();
         let d = self.graphics.pixelDensity();
         for (var x = 0; x < width; x++) {
@@ -58,7 +58,6 @@ function Layer(name, layerWidth, layerHeight, backgroundLayer = false) {
                         if (currentPixelAlpha !== 0) {
                             self.graphics.pixels[index + 3] = alpha;
                         }
-                        count++;
                     }
                 }
             }
