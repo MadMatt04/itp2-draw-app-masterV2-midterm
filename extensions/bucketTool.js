@@ -19,8 +19,11 @@ class BucketTool {
 
     draw() {
         console.log("Bucket draw");
-        if (mouseIsPressed) {
-            this.floodFill(mouseX, mouseY, color(this.palette.selectedColour));
+        if (mouseIsPressed && mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height) {
+            var seed = {x: mouseX, y: mouseY };
+            var c = color(this.palette.selectedColour);
+            var cl = [red(c), green(c), blue(c), alpha(c)];
+            this.floodFill2(seed, cl);
             this.filled = true;
         }
     }
@@ -153,6 +156,78 @@ class BucketTool {
 
         console.log("GOT OUT", count);
         this.graphics.updatePixels();
+    }
+
+    arrayEquals(a, b) {
+        return (
+            Array.isArray(a) &&
+            Array.isArray(b) &&
+            a.length === b.length &&
+            a.every((val, index) => val === b[index])
+        );
+    }
+
+    expandToNeighbours(queue,current){
+
+        var x = current.x
+        var y = current.y
+
+        if(x-1>0){
+            queue.push(createVector(x-1,y))
+        }
+
+        if(x+1<width){
+            queue.push(createVector(x+1,y))
+        }
+
+        if(y-1>0){
+            queue.push(createVector(x,y-1))
+        }
+
+        if(y+1<height){
+            queue.push(createVector(x,y+1))
+        }
+
+        return queue
+
+    }
+
+     floodFill2(seed, fillColor) {
+        this.graphics.loadPixels();
+
+        var index = 4 * (width * seed.y + seed.x);
+        var seedColor = [
+            this.graphics.pixels[index],
+            this.graphics.pixels[index + 1],
+            this.graphics.pixels[index + 2],
+            this.graphics.pixels[index + 3],
+        ];
+
+        let queue = [];
+        queue.push(seed);
+
+        while (queue.length) {
+            let current = queue.shift();
+            index = 4 * (width * current.y + current.x);
+            let color = [
+                this.graphics.pixels[index],
+                this.graphics.pixels[index + 1],
+                this.graphics.pixels[index + 2],
+                this.graphics.pixels[index + 3],
+            ];
+
+            if (!this.arrayEquals(color, seedColor)) {
+                continue;
+            }
+
+            for (let i = 0; i < 4; i++) {
+                this.graphics.pixels[index+i] = fillColor[0 + i];
+            }
+
+            queue = this.expandToNeighbours(queue, current)
+        }
+
+         this.graphics.updatePixels()
     }
 }
 
