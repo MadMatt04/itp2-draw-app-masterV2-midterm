@@ -19,11 +19,8 @@ class BucketTool {
 
     draw() {
         console.log("Bucket draw");
-        if (mouseIsPressed && !this.filled) {
-            var c = color(this.palette.selectedColour);
-            // c.setAlpha(255);
-            console.log("selectedColour", c);
-            this.floodFill(mouseX, mouseY, c);
+        if (mouseIsPressed) {
+            this.floodFill(mouseX, mouseY, color(this.palette.selectedColour));
             this.filled = true;
         }
     }
@@ -52,13 +49,13 @@ class BucketTool {
             return false;
         }
 
-        var colour = this.getColorAt(x, y);
-        if (red(colour) !== red(targetColour) || blue(colour) !== blue(targetColour) ||
-            green(colour) !== green(targetColour)) {
+        if (visited.contains(x, y)) {
             return false;
         }
 
-        return !visited.contains(x, y);
+        var colour = this.getColorAt(x, y);
+        return !(red(colour) !== red(targetColour) || blue(colour) !== blue(targetColour) ||
+            green(colour) !== green(targetColour));
     }
 
     getColorAt(x, y) {
@@ -70,7 +67,6 @@ class BucketTool {
             return undefined;
         }
 
-        //this.graphics.loadPixels();
         let d = this.graphics.pixelDensity();
 
         var i = 4 * d * (y * d * width + x);
@@ -109,18 +105,18 @@ class BucketTool {
         var count = 0;
 
         while (!queue.isEmpty) {
-            if (count % 1000 === 0) {
-                console.log("@COUNT", count);
-                // this.graphics.loadPixels();
-                // var shouldUpdate = true;
-            }
+            // if (count % 1000 === 0) {
+            //     console.log("@COUNT", count);
+            //     // this.graphics.loadPixels();
+            //     // var shouldUpdate = true;
+            // }
             count++;
             var currentPoint = queue.head;
             // console.log("currentPoint", currentPoint);
             var q1 = Date.now();
             queue.dequeue();
             var q2 = Date.now();
-            console.log(`Deque took ${q2 - q1} ms.`);
+            // console.log(`Deque took ${q2 - q1} ms.`);
 
             for (let i = 0; i < d; i++) {
                 for (let j = 0; j < d; j++) {
@@ -138,10 +134,8 @@ class BucketTool {
 
                 // console.log("neighbour", neighbourX, neighbourY);
 
-                var d1 = Date.now();
                 var inside = this.isInside(neighbourX, neighbourY, targetColour, visited);
-                var d2 = Date.now();
-                console.log(`Inside took ${d2 - d1} ms.`);
+                // console.log(`Inside took ${d2 - d1} ms.`);
 
                 if (inside) {
                     // console.log("isInside", neighbourX, neighbourY, targetColour);
@@ -157,7 +151,7 @@ class BucketTool {
             // }
         }
 
-        console.log("GOT OUT");
+        console.log("GOT OUT", count);
         this.graphics.updatePixels();
     }
 }
@@ -193,12 +187,6 @@ class VisitedList {
 
     add(x, y) {
         this.backingArray.push({x: x, y: y});
-    }
-
-    addIfAbsent(x, y) {
-        if (!this.contains(x, y)) {
-            this.add(x, y);
-        }
     }
 
     contains(x, y) {
