@@ -2,6 +2,7 @@ class BucketTool {
     constructor() {
         this.icon = "assets/paint-bucket-svgrepo-com-adjusted.svg"
         this.name = "bucket";
+        this.filled = false;
     }
 
     set graphics(graphics) {
@@ -18,6 +19,13 @@ class BucketTool {
 
     draw() {
         console.log("Bucket draw");
+        if (mouseIsPressed && !this.filled) {
+            var c = color(this.palette.selectedColour);
+            // c.setAlpha(255);
+            console.log("selectedColour", c);
+            this.floodFill(mouseX, mouseY, c);
+            this.filled = true;
+        }
     }
 
     populateOptions() {
@@ -45,8 +53,8 @@ class BucketTool {
         }
 
         var colour = this.getColorAt(x, y);
-        if (red(colour) === red(targetColour) && blue(colour) === blue(targetColour) &&
-            green(colour) === green(targetColour)) {
+        if (red(colour) !== red(targetColour) || blue(colour) !== blue(targetColour) ||
+            green(colour) !== green(targetColour)) {
             return false;
         }
 
@@ -62,22 +70,17 @@ class BucketTool {
             return undefined;
         }
 
-        this.graphics.loadPixels();
+        //this.graphics.loadPixels();
         let d = this.graphics.pixelDensity();
 
         var i = 4 * d * (y * d * width + x);
         var [r, g, b, a] = [this.graphics.pixels[i], this.graphics.pixels[i + 1], this.graphics.pixels[i + 2],
                             this.graphics.pixels[i + 3]];
-        var colour = new p5.Color();
-        colour.setRed(r);
-        colour.setGreen(g);
-        colour.setBlue(b);
-        colour.setAlpha(a);
-
-        return colour;
+        return color(r, g, b, a);
     };
 
     floodFill(startX, startY, colour) {
+        this.graphics.loadPixels();
         var targetColour = this.getColorAt(startX, startY);
         if (!targetColour) {
             return;
@@ -95,26 +98,66 @@ class BucketTool {
             {x: 0, y: -1}
         ];
 
-        this.graphics.loadPixels();
-
         this.graphics.set(startX, startY, colour);
+        this.graphics.updatePixels();
+
+        var d = pixelDensity();
+        var r = red(colour);
+        var g = green(colour);
+        var b = blue(colour);
+        var a = alpha(colour);
+        var count = 0;
 
         while (!queue.isEmpty) {
+            if (count % 1000 === 0) {
+                console.log("@COUNT", count);
+                // this.graphics.loadPixels();
+                // var shouldUpdate = true;
+            }
+            count++;
             var currentPoint = queue.head;
+            // console.log("currentPoint", currentPoint);
+            var q1 = Date.now();
             queue.dequeue();
-            this.graphics.set(currentPoint.x, currentPoint.y, colour);
+            var q2 = Date.now();
+            console.log(`Deque took ${q2 - q1} ms.`);
+
+            for (let i = 0; i < d; i++) {
+                for (let j = 0; j < d; j++) {
+                    var index = 4 * ((currentPoint.y * d + j) * width * d + (currentPoint.x * d + i));
+                    this.graphics.pixels[index] = r;
+                    this.graphics.pixels[index + 1] = g;
+                    this.graphics.pixels[index + 2] = b;
+                    this.graphics.pixels[index + 3] = a;
+                }
+            }
 
             delta.forEach(direction => {
                 var neighbourX = currentPoint.x + direction.x;
                 var neighbourY = currentPoint.y + direction.y;
 
-                if (this.isInside(neighbourX, neighbourY, targetColour())) {
+                // console.log("neighbour", neighbourX, neighbourY);
+
+                var d1 = Date.now();
+                var inside = this.isInside(neighbourX, neighbourY, targetColour, visited);
+                var d2 = Date.now();
+                console.log(`Inside took ${d2 - d1} ms.`);
+
+                if (inside) {
+                    // console.log("isInside", neighbourX, neighbourY, targetColour);
                     visited.add(neighbourX, neighbourY);
                     queue.enqueue({x: neighbourX, y: neighbourY});
                 }
             });
+
+            // if (shouldUpdate) {
+            //     console.log("UPDATING");
+            //     this.graphics.updatePixels();
+            //     shouldUpdate = false;
+            // }
         }
 
+        console.log("GOT OUT");
         this.graphics.updatePixels();
     }
 }
