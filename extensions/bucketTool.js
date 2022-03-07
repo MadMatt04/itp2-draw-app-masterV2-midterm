@@ -21,7 +21,7 @@ class BucketTool {
         console.log("Bucket draw");
         if (mouseIsPressed && mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height) {
             var c = color(this.palette.selectedColour);
-            var cl = [red(c), green(c), blue(c), alpha(c)];
+            var cl = new Colour(red(c), green(c), blue(c), alpha(c));
             this.floodFill2(mouseX, mouseY, cl);
             this.filled = true;
         }
@@ -166,6 +166,10 @@ class BucketTool {
         );
     }
 
+    colorEquals(c1, c2) {
+        return red(c1) === red(c2) && green(c1) === green(c2) && blue(c1) === blue(c2) && alpha(c1) === alpha(c2);
+    }
+
     expandToNeighbours(queue,current){
 
         var x = current.x
@@ -192,12 +196,12 @@ class BucketTool {
         this.graphics.loadPixels();
 
         var index = 4 * (width * startY + startX);
-        var seedColor = [
+        var seedColor = new Colour(
             this.graphics.pixels[index],
             this.graphics.pixels[index + 1],
             this.graphics.pixels[index + 2],
             this.graphics.pixels[index + 3],
-        ];
+        );
 
         let queue = new Queue();
         queue.enqueue(createVector(startX, startY));
@@ -206,20 +210,21 @@ class BucketTool {
             let current = queue.head;
             queue.dequeue();
             index = 4 * (width * current.y + current.x);
-            let color = [
+            let color = new Colour(
                 this.graphics.pixels[index],
                 this.graphics.pixels[index + 1],
                 this.graphics.pixels[index + 2],
-                this.graphics.pixels[index + 3],
-            ];
+                this.graphics.pixels[index + 3]
+            );
 
-            if (!this.arrayEquals(color, seedColor)) {
+            if (!color.equals(seedColor)) {
                 continue;
             }
 
-            for (let i = 0; i < 4; i++) {
-                this.graphics.pixels[index+i] = fillColor[0 + i];
-            }
+            this.graphics.pixels[index] = fillColor.red;
+            this.graphics.pixels[index+1] = fillColor.green;
+            this.graphics.pixels[index+2] = fillColor.blue;
+            this.graphics.pixels[index+3] = fillColor.alpha;
 
             this.expandToNeighbours(queue, current)
         }
@@ -263,5 +268,20 @@ class VisitedList {
 
     contains(x, y) {
         return this.backingArray.find(pair => pair.x === x && pair.y === y);
+    }
+}
+
+// Because p5.Color is just too slow, as red(), green() etc. extraction operations are very slow.
+class Colour {
+    constructor(r, g, b, a) {
+        this.red = r;
+        this.green = g;
+        this.blue = b;
+        this.alpha = a;
+    }
+
+    equals(colour) {
+        return this.red === colour.red && this.green === colour.green && this.blue === colour.blue &&
+            this.alpha === colour.alpha;
     }
 }
