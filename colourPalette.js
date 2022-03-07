@@ -22,6 +22,13 @@ function ColourPalette(graphicsProvider) {
 		setFillAndStroke();
 	}
 
+	this.selectedColourObject = function() {
+		var colorObject = color(self.selectedColour);
+		colorObject.setAlpha(alpha);
+
+		return colorObject;
+	}
+
 	var graphics = function() {
 		return graphicsProvider.graphics();
 	}
@@ -43,10 +50,10 @@ function ColourPalette(graphicsProvider) {
 	}
 
 	var setFillAndStroke = function() {
-		var colorObject = color(self.selectedColour);
-		colorObject.setAlpha(alpha);
-		graphics().fill(colorObject);
-		graphics().stroke(colorObject);
+		var colourObject = color(self.selectedColour);
+		colourObject.setAlpha(alpha);
+		graphics().fill(colourObject);
+		graphics().stroke(colourObject);
 	}
 
 	//load in the colours

@@ -8,7 +8,6 @@ var layerUi = null;
 
 
 function setup() {
-    pixelDensity(1);
     //create a canvas to fill the content div from index.html
     canvasContainer = select('#content');
     var c = createCanvas(canvasContainer.size().width, canvasContainer.size().height);

@@ -1,66 +1,86 @@
+/**
+ * An implementation of the Bucket (flood fill tool). Unlike the other extensions, this implementation uses ES6
+ * classes rather than constructor functions.
+ */
 class BucketTool {
+    /**
+     * The constructor. All tools need an icon and a name, so that is what we set inside the constructor.
+     */
     constructor() {
         this.icon = "assets/paint-bucket-svgrepo-com-adjusted.svg"
         this.name = "bucket";
-        this.filled = false;
     }
 
+    /**
+     * Set the current drawing surface, as received from the layer infrastructure.
+     * @param graphics a p5.Graphics drawing surface.
+     */
     set graphics(graphics) {
         this.g = graphics;
     }
 
+    /**
+     * Retrieve the current drawing surface.
+     * @returns The current p5.Graphics drawing surface.
+     */
     get graphics() {
         return this.g;
     }
 
+    /**
+     * Remember the reference to the colour palette component.
+     * @param palette The ColourPalette instance.
+     */
     set colourPalette(palette) {
         this.palette = palette;
     }
 
+    /**
+     * The rendering function, called on every p5 draw cycle. Will trigger the flood fill algorithm if the mouse
+     * was pressed.
+     */
     draw() {
-        console.log("Bucket draw");
         if (mouseIsPressed && mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height) {
-            var c = color(this.palette.selectedColour);
-            var cl = new Colour(red(c), green(c), blue(c), alpha(c));
-            var d1 = Date.now();
-            this.floodFill2(mouseX, mouseY, cl);
-            var d2 = Date.now();
-            console.log("Flood fill", d2 - d1);
+            var c = this.palette.selectedColourObject();
+            this.floodFill(mouseX, mouseY, new Colour(red(c), green(c), blue(c), alpha(c)));
         }
     }
 
+    /**
+     * Initialize the bucket fill options. This creates the opacity slider.
+     */
     populateOptions() {
+        // Setting the cursor here is perhaps not the most appropriate, but there are no other callbacks when the tool
+        // is selected.
+        cursor('assets/bucket.cur');
         var self = this;
+
+        // Create the slider, constructor function defined in freehandOptions.js
         var parent = select(".options");
         var opacitySlider = new LabeledSlider(parent, "Opacity", "bucket-opacity-slider-ctrl", 0, 100, 100,
             0, "%", function(value) {
-                // Transform from percentage to a 0.0 to 1.0 range.
-                self.palette.alpha(value / 100.0);
+                // Map the percentage value 0-100 to an alpha value in the 0-255 range.
+                var mappedAlpha = Math.round(map(value, 0, 100, 0, 255));
+                self.palette.alpha(mappedAlpha);
             });
     }
 
+    /**
+     * Reset to the default state if the tool is deselected. Remove options, restore opacity and restore the cursor.
+     */
     unselectTool() {
         select(".options").html("");
         this.palette.alpha(255);
+        cursor(ARROW);
     }
 
-    isInside(x, y, targetColour, visited) {
-        if (x < 0 || x >= width) {
-            return false;
-        }
-
-        if (y < 0 || y >= height) {
-            return false;
-        }
-
-        if (visited.contains(x, y)) {
-            return false;
-        }
-
-        var colour = this.getColourAt(x, y);
-        return !colour.equals(targetColour);
-    }
-
+    /**
+     * Returns the colour at location denoted by (x, y).
+     * @param x The x coordinate of the location of interest.
+     * @param y The y coordinate of the location of interest.
+     * @returns {undefined|Colour} If the coordinates are out of range, returns undefined, otherwise a Colour object
+     * representing the location colour.
+     */
     getColourAt(x, y) {
         if (x < 0 || x >= width) {
             return undefined;
@@ -72,206 +92,157 @@ class BucketTool {
 
         let d = this.graphics.pixelDensity();
 
+        // Calculate the position of the red value for location (x, y), considering pixel density.
         var i = 4 * d * (y * d * width + x);
         return new Colour(this.graphics.pixels[i], this.graphics.pixels[i + 1], this.graphics.pixels[i + 2],
             this.graphics.pixels[i + 3]);
     };
 
-    floodFill(startX, startY, colour) {
-        this.graphics.loadPixels();
-        var targetColour = this.getColourAt(startX, startY);
-        if (!targetColour) {
-            return;
-        }
+    /**
+     * Puts the north, south, east and west neighbours of point in the specified queue for consideration of the bucket
+     * fill algorithm, assuming they are within the bounds of the screen.
+     *
+     * @param queue The Queue holding p5 Vectors representing points to examine in the bucket fill algorithm.
+     * @param point The point whose neighbours to considered.
+     */
+    enqueueNeighbouringPoints(queue, point) {
 
-        var visited = new VisitedList();
-        var queue = new Queue();
-        queue.enqueue({x: startX, y: startY});
-        visited.add(startX, startY);
+        var x = point.x
+        var y = point.y
 
-        var delta = [
-            {x: 1, y: 0},
-            {x: -1, y: 0},
-            {x: 0, y: 1},
-            {x: 0, y: -1}
-        ];
-
-        this.graphics.set(startX, startY, colour);
-        this.graphics.updatePixels();
-
-        var d = pixelDensity();
-        var r = colour.red;
-        var g = colour.green;
-        var b = colour.blue;
-        var a = colour.alpha;
-        var count = 0;
-
-        while (!queue.isEmpty) {
-            // if (count % 1000 === 0) {
-            //     console.log("@COUNT", count);
-            //     // this.graphics.loadPixels();
-            //     // var shouldUpdate = true;
-            // }
-            count++;
-            var currentPoint = queue.head;
-            // console.log("currentPoint", currentPoint);
-            var q1 = Date.now();
-            queue.dequeue();
-            var q2 = Date.now();
-            // console.log(`Deque took ${q2 - q1} ms.`);
-
-            for (let i = 0; i < d; i++) {
-                for (let j = 0; j < d; j++) {
-                    var index = 4 * ((currentPoint.y * d + j) * width * d + (currentPoint.x * d + i));
-                    this.graphics.pixels[index] = r;
-                    this.graphics.pixels[index + 1] = g;
-                    this.graphics.pixels[index + 2] = b;
-                    this.graphics.pixels[index + 3] = a;
-                }
-            }
-
-            delta.forEach(direction => {
-                var neighbourX = currentPoint.x + direction.x;
-                var neighbourY = currentPoint.y + direction.y;
-
-                // console.log("neighbour", neighbourX, neighbourY);
-
-                var inside = this.isInside(neighbourX, neighbourY, targetColour, visited);
-                // console.log(`Inside took ${d2 - d1} ms.`);
-
-                if (inside) {
-                    // console.log("isInside", neighbourX, neighbourY, targetColour);
-                    visited.add(neighbourX, neighbourY);
-                    queue.enqueue({x: neighbourX, y: neighbourY});
-                }
-            });
-
-            // if (shouldUpdate) {
-            //     console.log("UPDATING");
-            //     this.graphics.updatePixels();
-            //     shouldUpdate = false;
-            // }
-        }
-
-        console.log("GOT OUT", count);
-        this.graphics.updatePixels();
-    }
-
-    arrayEquals(a, b) {
-        return (
-            Array.isArray(a) &&
-            Array.isArray(b) &&
-            a.length === b.length &&
-            a.every((val, index) => val === b[index])
-        );
-    }
-
-    colorEquals(c1, c2) {
-        return red(c1) === red(c2) && green(c1) === green(c2) && blue(c1) === blue(c2) && alpha(c1) === alpha(c2);
-    }
-
-    enqueueNeighbouringPoints(queue, current, visited) {
-
-        var x = current.x
-        var y = current.y
-
-        if (x - 1 > 0 && !visited.contains(x - 1, y)) {
+        if (x - 1 > 0) {
             queue.enqueue(createVector(x - 1, y))
         }
 
-        if (x + 1 < width && !visited.contains(x + 1, y)) {
+        if (x + 1 < width) {
             queue.enqueue(createVector(x + 1, y))
         }
 
-        if (y - 1 > 0 && !visited.contains(x, y - 1)) {
+        if (y - 1 > 0) {
             queue.enqueue(createVector(x, y - 1))
         }
 
-        if (y + 1 < height && !visited.contains(x, y + 1)) {
+        if (y + 1 < height) {
             queue.enqueue(createVector(x, y + 1))
         }
     }
 
-    floodFill2(startX, startY, fillColour) {
+    /**
+     * The implementation of the flood fill algorithm, using a helper queue that stores the points (pixels) we need
+     * to consider.
+     * @param startX The x location at which to start filling the area.
+     * @param startY The y location at which to start filling the area.
+     * @param fillColour The colour to flood the area with.
+     */
+    floodFill(startX, startY, fillColour) {
+        // Prepare the pixel array of the current drawing surface (layer) for manipulation;
         this.graphics.loadPixels();
 
-        var index = 4 * (width * startY + startX);
+        // Calculate the index of the pixel array for the starting position.
+        var d = this.graphics.pixelDensity();
+        var index = 4 * d * (startY * d * width + startX);
+
+        // Get the colour at the starting location. This is the colour that we will be replacing.
         var targetColour = this.getColourAt(startX, startY);
 
-        let queue = new Queue();
+        // Create the queue holding the points we need to examine, enqueue the starting location in it.
+        var queue = new Queue();
         queue.enqueue(createVector(startX, startY));
 
-        let visited = new VisitedList();
-
+        // Loop through enqueued location that we need to examine for colour change.
         while (!queue.isEmpty) {
-            let point = queue.head;
+            // Retrieve the head of the queue.
+            var point = queue.head;
             queue.dequeue();
-            visited.addPoint(point);
 
-            index = 4 * (width * point.y + point.x);
-            let colour = this.getColourAt(point.x, point.y);
-
+            // Retrieve the colour of the point under consideration. Then, check if it is the same as the target colour
+            // and if not, just go to the next point. Otherwise, replace the colour with our chosen colour.
+            var colour = this.getColourAt(point.x, point.y);
             if (!colour.equals(targetColour)) {
                 continue;
             }
 
-            this.graphics.pixels[index] = fillColour.red;
-            this.graphics.pixels[index + 1] = fillColour.green;
-            this.graphics.pixels[index + 2] = fillColour.blue;
-            this.graphics.pixels[index + 3] = fillColour.alpha;
+            // Set the pixels of our (x,y) location, taking pixel density in account.
+            for (var i = 0; i < d; i++) {
+                for (var j = 0; j < d; j++) {
+                    // Calculate the pixel array index of the points we need to manipulate, taking pixel density into
+                    // account.
+                    var updateIndex = 4 * ((point.y * d + j) * width * d + (point.x * d + i));
+                    this.graphics.pixels[updateIndex] = fillColour.red;
+                    this.graphics.pixels[updateIndex + 1] = fillColour.green;
+                    this.graphics.pixels[updateIndex + 2] = fillColour.blue;
+                    this.graphics.pixels[updateIndex + 3] = fillColour.alpha;
+                }
+            }
 
-            this.enqueueNeighbouringPoints(queue, point, visited);
+            // Put the neighbouring locations into the queue.
+            this.enqueueNeighbouringPoints(queue, point);
         }
 
+        // Finally, commit the pixels, signaling that the array manipulation has been completed.
         this.graphics.updatePixels()
     }
 }
 
+/**
+ * A class that implements the queue data structure (by wrapping a javascript array).
+ */
 class Queue {
+
+    /**
+     * Initialize the queue.
+     */
     constructor() {
         this.backingArray = [];
     }
 
+    /**
+     * Returns the head (first element) of the queue.
+     * @returns {*} The (head) first element of the queue.
+     */
     get head() {
         return this.backingArray[0];
     }
 
+    /**
+     * Checks whether the queue is empty.
+     * @returns {boolean} True if the queue is empty, false otherwise.
+     */
     get isEmpty() {
         return this.backingArray.length === 0;
     }
 
+    /**
+     * Removes the head of the queue, unless the queue is empty, in which case it does nothing.
+     */
     dequeue() {
         if (!this.isEmpty) {
             this.backingArray.shift();
         }
     }
 
+    /**
+     * Stores the specified element at the end of the queue.
+     * @param element The element to store.
+     */
     enqueue(element) {
         this.backingArray.push(element);
     }
 }
 
-class VisitedList {
-    constructor() {
-        this.backingArray = new Map();
-    }
-
-    add(x, y) {
-        this.backingArray.push(createVector(x, y));
-    }
-
-    addPoint(point) {
-        // this.backingArray.set(point.toString(), true);
-    }
-
-    contains(x, y) {
-        // return this.backingArray.has(createVector(x, y).toString());
-        return false;
-    }
-}
-
-// Because p5.Color is just too slow, as red(), green() etc. extraction operations are very slow.
+/**
+ * A simple structure representing an RGB/A colour.
+ *  Because p5.Color is just too slow, as red(), green() etc. extraction operations are very slow.
+ */
 class Colour {
+
+    /**
+     * Initializes the colour with the specified values.
+     * @param r The red value in the 0-255 range.
+     * @param g The green value in the 0-255 range.
+     * @param b The blue value in the 0-255 range.
+     * @param a The alpha value in the 0-255 range.
+     */
     constructor(r, g, b, a) {
         this.red = r;
         this.green = g;
@@ -279,6 +250,12 @@ class Colour {
         this.alpha = a;
     }
 
+    /**
+     * Implements the equality comparison for Colour objects. Two Colours are considered equal if all their
+     * components (the red, green, blue and alpha values) are equal.
+     * @param colour
+     * @returns {boolean} True if the colours are equal, false otherwise.
+     */
     equals(colour) {
         return this.red === colour.red && this.green === colour.green && this.blue === colour.blue &&
             this.alpha === colour.alpha;
