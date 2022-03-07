@@ -20,10 +20,9 @@ class BucketTool {
     draw() {
         console.log("Bucket draw");
         if (mouseIsPressed && mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height) {
-            var seed = {x: mouseX, y: mouseY };
             var c = color(this.palette.selectedColour);
             var cl = [red(c), green(c), blue(c), alpha(c)];
-            this.floodFill2(seed, cl);
+            this.floodFill2(mouseX, mouseY, cl);
             this.filled = true;
         }
     }
@@ -192,10 +191,10 @@ class BucketTool {
 
     }
 
-     floodFill2(seed, fillColor) {
+     floodFill2(startX, startY, fillColor) {
         this.graphics.loadPixels();
 
-        var index = 4 * (width * seed.y + seed.x);
+        var index = 4 * (width * startY + startX);
         var seedColor = [
             this.graphics.pixels[index],
             this.graphics.pixels[index + 1],
@@ -204,7 +203,7 @@ class BucketTool {
         ];
 
         let queue = [];
-        queue.push(seed);
+        queue.push(createVector(startX, startY));
 
         while (queue.length) {
             let current = queue.shift();
