@@ -22,8 +22,10 @@ class BucketTool {
         if (mouseIsPressed && mouseX >= 0 && mouseX < width && mouseY >= 0 && mouseY < height) {
             var c = color(this.palette.selectedColour);
             var cl = new Colour(red(c), green(c), blue(c), alpha(c));
+            var d1 = Date.now();
             this.floodFill2(mouseX, mouseY, cl);
-            this.filled = true;
+            var d2 = Date.now();
+            console.log("Flood fill", d2 - d1);
         }
     }
 
@@ -168,24 +170,24 @@ class BucketTool {
         return red(c1) === red(c2) && green(c1) === green(c2) && blue(c1) === blue(c2) && alpha(c1) === alpha(c2);
     }
 
-    expandToNeighbours(queue, current) {
+    enqueueNeighbouringPoints(queue, current, visited) {
 
         var x = current.x
         var y = current.y
 
-        if (x - 1 > 0) {
+        if (x - 1 > 0 && !visited.contains(x - 1, y)) {
             queue.enqueue(createVector(x - 1, y))
         }
 
-        if (x + 1 < width) {
+        if (x + 1 < width && !visited.contains(x + 1, y)) {
             queue.enqueue(createVector(x + 1, y))
         }
 
-        if (y - 1 > 0) {
+        if (y - 1 > 0 && !visited.contains(x, y - 1)) {
             queue.enqueue(createVector(x, y - 1))
         }
 
-        if (y + 1 < height) {
+        if (y + 1 < height && !visited.contains(x, y + 1)) {
             queue.enqueue(createVector(x, y + 1))
         }
     }
@@ -194,18 +196,22 @@ class BucketTool {
         this.graphics.loadPixels();
 
         var index = 4 * (width * startY + startX);
-        var seedColor = this.getColourAt(startX, startY);
+        var targetColour = this.getColourAt(startX, startY);
 
         let queue = new Queue();
         queue.enqueue(createVector(startX, startY));
 
+        let visited = new VisitedList();
+
         while (!queue.isEmpty) {
             let point = queue.head;
             queue.dequeue();
-            index = 4 * (width * point.y + point.x);
-            let color = this.getColourAt(point.x, point.y);
+            visited.addPoint(point);
 
-            if (!color.equals(seedColor)) {
+            index = 4 * (width * point.y + point.x);
+            let colour = this.getColourAt(point.x, point.y);
+
+            if (!colour.equals(targetColour)) {
                 continue;
             }
 
@@ -214,7 +220,7 @@ class BucketTool {
             this.graphics.pixels[index + 2] = fillColour.blue;
             this.graphics.pixels[index + 3] = fillColour.alpha;
 
-            this.expandToNeighbours(queue, point)
+            this.enqueueNeighbouringPoints(queue, point, visited);
         }
 
         this.graphics.updatePixels()
@@ -247,15 +253,20 @@ class Queue {
 
 class VisitedList {
     constructor() {
-        this.backingArray = [];
+        this.backingArray = new Map();
     }
 
     add(x, y) {
-        this.backingArray.push({x: x, y: y});
+        this.backingArray.push(createVector(x, y));
+    }
+
+    addPoint(point) {
+        // this.backingArray.set(point.toString(), true);
     }
 
     contains(x, y) {
-        return this.backingArray.find(pair => pair.x === x && pair.y === y);
+        // return this.backingArray.has(createVector(x, y).toString());
+        return false;
     }
 }
 
