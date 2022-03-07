@@ -172,23 +172,20 @@ class BucketTool {
         var y = current.y
 
         if(x-1>0){
-            queue.push(createVector(x-1,y))
+            queue.enqueue(createVector(x-1,y))
         }
 
         if(x+1<width){
-            queue.push(createVector(x+1,y))
+            queue.enqueue(createVector(x+1,y))
         }
 
         if(y-1>0){
-            queue.push(createVector(x,y-1))
+            queue.enqueue(createVector(x,y-1))
         }
 
         if(y+1<height){
-            queue.push(createVector(x,y+1))
+            queue.enqueue(createVector(x,y+1))
         }
-
-        return queue
-
     }
 
      floodFill2(startX, startY, fillColor) {
@@ -202,11 +199,12 @@ class BucketTool {
             this.graphics.pixels[index + 3],
         ];
 
-        let queue = [];
-        queue.push(createVector(startX, startY));
+        let queue = new Queue();
+        queue.enqueue(createVector(startX, startY));
 
-        while (queue.length) {
-            let current = queue.shift();
+        while (!queue.isEmpty) {
+            let current = queue.head;
+            queue.dequeue();
             index = 4 * (width * current.y + current.x);
             let color = [
                 this.graphics.pixels[index],
@@ -223,7 +221,7 @@ class BucketTool {
                 this.graphics.pixels[index+i] = fillColor[0 + i];
             }
 
-            queue = this.expandToNeighbours(queue, current)
+            this.expandToNeighbours(queue, current)
         }
 
          this.graphics.updatePixels()
@@ -245,7 +243,7 @@ class Queue {
 
     dequeue() {
         if (!this.isEmpty) {
-            this.backingArray.splice(0, 1);
+            this.backingArray.shift();
         }
     }
 
