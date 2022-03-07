@@ -55,12 +55,11 @@ class BucketTool {
             return false;
         }
 
-        var colour = this.getColorAt(x, y);
-        return !(red(colour) !== red(targetColour) || blue(colour) !== blue(targetColour) ||
-            green(colour) !== green(targetColour));
+        var colour = this.getColourAt(x, y);
+        return !colour.equals(targetColour);
     }
 
-    getColorAt(x, y) {
+    getColourAt(x, y) {
         if (x < 0 || x >= width) {
             return undefined;
         }
@@ -72,14 +71,13 @@ class BucketTool {
         let d = this.graphics.pixelDensity();
 
         var i = 4 * d * (y * d * width + x);
-        var [r, g, b, a] = [this.graphics.pixels[i], this.graphics.pixels[i + 1], this.graphics.pixels[i + 2],
-                            this.graphics.pixels[i + 3]];
-        return color(r, g, b, a);
+        return new Colour(this.graphics.pixels[i], this.graphics.pixels[i + 1], this.graphics.pixels[i + 2],
+            this.graphics.pixels[i + 3]);
     };
 
     floodFill(startX, startY, colour) {
         this.graphics.loadPixels();
-        var targetColour = this.getColorAt(startX, startY);
+        var targetColour = this.getColourAt(startX, startY);
         if (!targetColour) {
             return;
         }
@@ -100,10 +98,10 @@ class BucketTool {
         this.graphics.updatePixels();
 
         var d = pixelDensity();
-        var r = red(colour);
-        var g = green(colour);
-        var b = blue(colour);
-        var a = alpha(colour);
+        var r = colour.red;
+        var g = colour.green;
+        var b = colour.blue;
+        var a = colour.alpha;
         var count = 0;
 
         while (!queue.isEmpty) {
@@ -170,66 +168,56 @@ class BucketTool {
         return red(c1) === red(c2) && green(c1) === green(c2) && blue(c1) === blue(c2) && alpha(c1) === alpha(c2);
     }
 
-    expandToNeighbours(queue,current){
+    expandToNeighbours(queue, current) {
 
         var x = current.x
         var y = current.y
 
-        if(x-1>0){
-            queue.enqueue(createVector(x-1,y))
+        if (x - 1 > 0) {
+            queue.enqueue(createVector(x - 1, y))
         }
 
-        if(x+1<width){
-            queue.enqueue(createVector(x+1,y))
+        if (x + 1 < width) {
+            queue.enqueue(createVector(x + 1, y))
         }
 
-        if(y-1>0){
-            queue.enqueue(createVector(x,y-1))
+        if (y - 1 > 0) {
+            queue.enqueue(createVector(x, y - 1))
         }
 
-        if(y+1<height){
-            queue.enqueue(createVector(x,y+1))
+        if (y + 1 < height) {
+            queue.enqueue(createVector(x, y + 1))
         }
     }
 
-     floodFill2(startX, startY, fillColor) {
+    floodFill2(startX, startY, fillColour) {
         this.graphics.loadPixels();
 
         var index = 4 * (width * startY + startX);
-        var seedColor = new Colour(
-            this.graphics.pixels[index],
-            this.graphics.pixels[index + 1],
-            this.graphics.pixels[index + 2],
-            this.graphics.pixels[index + 3],
-        );
+        var seedColor = this.getColourAt(startX, startY);
 
         let queue = new Queue();
         queue.enqueue(createVector(startX, startY));
 
         while (!queue.isEmpty) {
-            let current = queue.head;
+            let point = queue.head;
             queue.dequeue();
-            index = 4 * (width * current.y + current.x);
-            let color = new Colour(
-                this.graphics.pixels[index],
-                this.graphics.pixels[index + 1],
-                this.graphics.pixels[index + 2],
-                this.graphics.pixels[index + 3]
-            );
+            index = 4 * (width * point.y + point.x);
+            let color = this.getColourAt(point.x, point.y);
 
             if (!color.equals(seedColor)) {
                 continue;
             }
 
-            this.graphics.pixels[index] = fillColor.red;
-            this.graphics.pixels[index+1] = fillColor.green;
-            this.graphics.pixels[index+2] = fillColor.blue;
-            this.graphics.pixels[index+3] = fillColor.alpha;
+            this.graphics.pixels[index] = fillColour.red;
+            this.graphics.pixels[index + 1] = fillColour.green;
+            this.graphics.pixels[index + 2] = fillColour.blue;
+            this.graphics.pixels[index + 3] = fillColour.alpha;
 
-            this.expandToNeighbours(queue, current)
+            this.expandToNeighbours(queue, point)
         }
 
-         this.graphics.updatePixels()
+        this.graphics.updatePixels()
     }
 }
 
