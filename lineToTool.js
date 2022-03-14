@@ -46,6 +46,10 @@ function LineToTool(){
 		}
 	};
 
+	/**
+	 * Set the current rendering surface (of the active layer).
+	 * @param g {p5.Graphics} The active layer's rendering surface.
+	 */
 	this.setGraphics = function(g) {
 		graphics = g;
 	}

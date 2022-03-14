@@ -3,7 +3,13 @@
 var toolbox = null;
 var colourP = null;
 var helpers = null;
+/**
+ * The global LayerManager instance.
+ */
 var layerManager = null;
+/**
+ * The global LayerUi isntance.
+ */
 var layerUi = null;
 
 
@@ -13,8 +19,9 @@ function setup() {
     var c = createCanvas(canvasContainer.size().width, canvasContainer.size().height);
     c.parent("content");
 
+    // Instantiate the LayerManager, assign it to the global variable.
     layerManager = new LayerManager(c.width, c.height);
-    console.log(`w: ${c.width}, h: ${c.height}`);
+    // Instantiate the LayerUi, pass it
     layerUi = new LayerUi(layerManager);
 
     //create helper functions and the colour palette
@@ -33,17 +40,20 @@ function setup() {
     background(255);
 
     // Layers
-
     toolbox.tools.forEach(tool => {
         if (tool.hasOwnProperty("setColourPalette")) {
             tool.setColourPalette(colourP);
-        } else if (Object.getPrototypeOf(tool).hasOwnProperty("colourPalette")) {
+        }
+        // required for ES6 classes, used in extensions/bucketTool.js.
+        else if (Object.getPrototypeOf(tool).hasOwnProperty("colourPalette")) {
             tool.colourPalette = colourP;
         }
     });
 
+    // Set the current layer's rendering surface to all the tools.
     setGraphicsContext(layerManager.activeLayer())
 
+    // Create the layer UI and register the
     layerUi.createUi(select("#layer-ui"));
     layerManager.onActiveLayerChanged(setGraphicsContext);
 }
@@ -72,7 +82,9 @@ function setGraphicsContext(layer) {
     toolbox.tools.forEach(tool => {
         if (tool.hasOwnProperty("setGraphics")) {
             tool.setGraphics(layer.graphics);
-        } else if (Object.getPrototypeOf(tool).hasOwnProperty("graphics")) {
+        }
+        // required for ES6 classes, used in extensions/bucketTool.js.
+        else if (Object.getPrototypeOf(tool).hasOwnProperty("graphics")) {
             tool.graphics = layer.graphics;
         }
     });
