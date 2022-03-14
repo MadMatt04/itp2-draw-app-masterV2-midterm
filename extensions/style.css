@@ -1,3 +1,4 @@
+/* Set the font for the options, layer panel etc. */
 .ctrl-label,
 .box.options label,
 .layerN {
@@ -5,20 +6,24 @@
     font-size: 80%;
 }
 
+/* The layer name font properties. */
 .layerN {
     font-size: 70%;
     font-weight: bold;
 }
 
+/*
+ * Gap between the label and the slider control.
+ */
 .slider-ctrl span {
     margin-right: 4px;
 }
 
+/* The layout of the grid panel, done via grid layout */
 .layers {
     grid-area: layers;
     display: grid;
     height: 100%;
-    /*background: aqua;*/
     grid-template-columns: 15% 15% 15% 15% auto 15%;
     grid-template-rows: 25% auto 25%;
     grid-template-areas:
@@ -28,19 +33,20 @@
     ;
 }
 
+/* Layer opacity control panel settings. */
 .opacityP {
     grid-area: opacityP;
     font-size: 60%;
     padding-top: 6px;
-    /*background: wheat;*/
 }
 
+/* Add scrolling to the panel containing the list of layers. */
 .layerP {
     grid-area: layerP;
     overflow-y: scroll;
-    /*background: darkblue;*/
 }
 
+/* A layer row is laid out using flexbox, in order to avoid nested grid layouts. */
 .layerRow {
     display: flex;
     flex-direction: row;
@@ -49,19 +55,29 @@
     align-items: center;
 }
 
+/* Set the background for when a layer row is selected. */
 .layerRow.selectedLayer {
     background: chocolate;
 }
 
+/*
+ * Some margin around the eye (layer visibility) icon.
+ */
 .visibilityBtn {
     margin-left: 8%;
     margin-right: 8%;
 }
 
+/*
+ * The grid-area layerN corresponds to the .layerN class.
+ */
 .layerN {
     grid-area: layerN;
 }
 
+/*
+ * Settings for the layer buttons, mostly just make them all look the same.
+ */
 .b1, .b2, .b3, .b4, .b5 {
 
     width: 95%;
@@ -71,10 +87,15 @@
     align-self: center;
 }
 
+/*
+ * The dimensions of the first and the last buttons are a bit different, so resize them here.
+ */
 .b1, .b5 {
     height: 65%;
     width: 80%;
 }
+
+/* The definitions of the button grid areas correspond to the identically named classes. */
 
 .b1 {
     grid-area: b1;
@@ -97,6 +118,9 @@
     justify-self: end;
 }
 
+/*
+ * The disabled button effect (reduced opacity). Used for layer management buttons.
+ */
 .disabled-btn {
     opacity: 0.5;
 }
